@@ -19,7 +19,7 @@ export const ReactAsyncSelect = ({
   error?: string
   name: string
   placeholder?: string
-  defaultValue?: { id: string; name: string } | null
+  defaultValue?: { id: string; name: string } | { id: string; name: string }[] | null
   url: string
   labelKey?: string
   isMulti?: boolean
@@ -47,7 +47,11 @@ export const ReactAsyncSelect = ({
         unstyled
         loadOptions={loadOptions}
         defaultValue={
-          defaultValue ? { value: defaultValue.id, label: defaultValue.name } : undefined
+          defaultValue
+            ? Array.isArray(defaultValue)
+              ? defaultValue.map((item) => ({ value: item.id, label: item.name }))
+              : { value: defaultValue.id, label: defaultValue.name }
+            : undefined
         }
         name={name}
         defaultOptions
