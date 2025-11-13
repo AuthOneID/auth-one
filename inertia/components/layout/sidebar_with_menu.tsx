@@ -8,6 +8,7 @@ import { MenuLink } from './MenuLink'
 
 export function SidebarWithMenu({ ...props }: React.ComponentProps<typeof Sidebar>) {
   const { url } = usePage<SharedProps & Record<string, unknown>>()
+  const pathname = url.split('?')[0]
 
   return (
     <Sidebar collapsible="icon" className="z-20" {...props}>
@@ -22,7 +23,7 @@ export function SidebarWithMenu({ ...props }: React.ComponentProps<typeof Sideba
             <div className="px-3 text-[13px] font-medium text-gray-500 mb-2">Menu</div>
             {menus.map((item) =>
               item.url && item.icon ? (
-                <MenuLink key={item.url} item={item} url={url} />
+                <MenuLink key={item.url} item={item} pathname={pathname} />
               ) : (
                 <div className="px-3 text-[13px] font-medium text-gray-500 pt-3 pb-0.5">
                   {item.title}

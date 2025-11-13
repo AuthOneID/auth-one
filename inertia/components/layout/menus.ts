@@ -21,7 +21,7 @@ export const menus: Menu[] = [
   },
   {
     title: 'Applications',
-    url: '/applications',
+    url: '/admin/applications',
     icon: SquareTerminal,
   },
   {
