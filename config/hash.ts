@@ -19,6 +19,11 @@ const hashConfig = defineConfig({
       parallelization: 1,
       maxMemory: 33554432,
     }),
+    bcrypt: drivers.bcrypt({
+      rounds: 10,
+      saltSize: 16,
+      version: 98,
+    }),
   },
 })
 
