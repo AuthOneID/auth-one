@@ -17,8 +17,6 @@ export default class LoginController {
     const { username, password } = await validator.validate(request.all())
     const user = await User.verifyCredentials(username, password)
 
-    console.log('user', user)
-
     await auth.use('web').login(user)
 
     response.redirect('/dashboard')

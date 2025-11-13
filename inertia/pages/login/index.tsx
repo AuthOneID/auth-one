@@ -9,12 +9,15 @@ const Page = () => {
   return (
     <div className="bg-muted flex min-h-svh flex-col items-center justify-center gap-6 p-6 md:p-10">
       <div className="flex w-full max-w-sm flex-col gap-6">
-        <a href="/" className="flex items-center gap-2 self-center font-medium">
-          <img src="/img/logo.png" alt="logo" className="w-48" />
-        </a>
         <div className="flex flex-col gap-6">
           <Card>
             <CardHeader className="text-center gap-0.5">
+              <a
+                href="/"
+                className="flex items-center gap-2 self-center font-medium mx-auto mb-3.5"
+              >
+                <img src="/img/logo.png" alt="logo" className="h-16" />
+              </a>
               <CardTitle className="text-xl">Welcome to AuthOne</CardTitle>
               <CardDescription>Login with your username and password</CardDescription>
             </CardHeader>
