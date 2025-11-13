@@ -16,7 +16,7 @@ export interface Menu {
 export const menus: Menu[] = [
   {
     title: 'Dashboard',
-    url: '/',
+    url: '/admin',
     icon: SquareTerminal,
   },
   {
@@ -26,20 +26,20 @@ export const menus: Menu[] = [
   },
   {
     title: 'Directory',
-    url: '/directory',
+    url: '#',
     icon: FolderOpen,
     children: [
       {
         title: 'Users',
-        url: '/users',
+        url: '/admin/directory/users',
       },
       {
         title: 'Groups',
-        url: '/groups',
+        url: '/admin/directory/groups',
       },
       {
         title: 'Roles',
-        url: '/roles',
+        url: '/admin/directory/roles',
       },
     ],
   },

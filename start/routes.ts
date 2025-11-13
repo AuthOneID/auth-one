@@ -17,6 +17,7 @@ router
     router.get('/', [DashboardController, 'index'])
   })
   .use([middleware.auth()])
+  .prefix('admin')
 
 router
   .group(() => {
