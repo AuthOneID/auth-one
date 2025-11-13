@@ -87,7 +87,7 @@ export default class UsersController {
   }
 
   private async getUser(id: string) {
-    if (id === 'tambah') {
+    if (id === 'create') {
       return null
     }
 

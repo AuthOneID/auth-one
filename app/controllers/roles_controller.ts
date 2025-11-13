@@ -74,7 +74,7 @@ export default class RolesController {
   }
 
   private async getRole(id: string) {
-    if (id === 'tambah') {
+    if (id === 'create') {
       return null
     }
 

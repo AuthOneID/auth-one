@@ -74,7 +74,7 @@ export default class GroupsController {
   }
 
   private async getGroup(id: string) {
-    if (id === 'tambah') {
+    if (id === 'create') {
       return null
     }
 
