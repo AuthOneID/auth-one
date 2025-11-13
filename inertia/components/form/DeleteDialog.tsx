@@ -35,12 +35,12 @@ export const DeleteDialog = ({
     >
       <DialogContent>
         <DialogHeader>
-          <DialogTitle className="mb-2 text-sm">Hapus {itemName || 'Item'}?</DialogTitle>
+          <DialogTitle className="mb-2 text-sm">Delete {itemName || 'Item'}?</DialogTitle>
           <DialogDescription className="hidden" />
           {errors && errors?.length > 0 && (
             <Alert variant={'destructiveSolid'} className="mb-2 border-0">
               <CircleAlert className="h-4 w-4" />
-              <AlertTitle className="text-[13px]">Mohon maaf ada kesalahan:</AlertTitle>
+              <AlertTitle className="text-[13px]">Sorry, there was an error:</AlertTitle>
               <AlertDescription className="text-xs">
                 <ul className="list-disc list-outside pl-5">
                   {errors.map((message, index) => (
@@ -60,7 +60,7 @@ export const DeleteDialog = ({
               setIsOpen(false)
             }}
           >
-            Batal
+            Cancel
           </Button>
           <Button
             variant="destructive"
@@ -69,7 +69,7 @@ export const DeleteDialog = ({
               router.visit(url, { method: 'delete' })
             }}
           >
-            Hapus
+            Delete
           </Button>
         </DialogFooter>
       </DialogContent>

@@ -8,17 +8,22 @@ import {
 import { Button } from '~/components/ui/button'
 import { useState } from 'react'
 import { ChevronDown, Loader2, Trash2 } from 'lucide-react'
-import { Form, router } from '@inertiajs/react'
+import { Form } from '@inertiajs/react'
 import { AdminLayout } from '~/components/layout/AdminLayout'
 import { BaseCard } from '~/components/BaseCard'
 import { FormInput } from '~/components/form/FormInput'
 import User from '#models/user'
 import { DeleteDialog } from '~/components/form/DeleteDialog'
-// import { DeleteDialog } from '~/components/form/DeleteDialog'
 
-const Page = ({ user, errors }: { errors?: Record<string, string>; user: User | null }) => {
-  const [deleteIsOpen, setDeleteIsOpen] = useState(false)
-  const [loading] = useState(false)
+const Page = ({
+  user,
+  flash,
+}: {
+  errors?: Record<string, string>
+  user: User | null
+  flash: { failure?: string }
+}) => {
+  const [deleteIsOpen, setDeleteIsOpen] = useState(!!flash.failure || false)
 
   return (
     <ContainerWithBreadcumbs
@@ -97,6 +102,7 @@ const Page = ({ user, errors }: { errors?: Record<string, string>; user: User | 
         message={`Are you sure you want to delete ${user?.fullName}? This action will delete all related data and cannot be undone.`}
         itemName={`user ${user?.fullName}`}
         url={`/admin/users/${user?.id}`}
+        errors={flash.failure ? [flash.failure] : []}
       />
     </ContainerWithBreadcumbs>
   )

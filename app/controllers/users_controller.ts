@@ -77,20 +77,13 @@ export default class UsersController {
   }
 
   public async destroy({ response, params, session }: HttpContext) {
-    try {
-      const user = await User.findOrFail(params.id + '_') // simulate delete failure
-      await user.delete()
+    const user = await User.findOrFail(params.id)
+    await user.delete()
 
-      session.flash('success', 'User successfully deleted.')
-      session.flash('id', Date.now())
+    session.flash('success', 'User successfully deleted.')
+    session.flash('id', Date.now())
 
-      return response.redirect('/admin/users')
-    } catch (error) {
-      session.flash('error', 'User successfully deleted.')
-      session.flash('id', Date.now())
-
-      return response.redirect().back()
-    }
+    return response.redirect('/admin/users')
   }
 
   private async getUser(id: string) {
