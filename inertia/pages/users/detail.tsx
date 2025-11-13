@@ -69,7 +69,6 @@ const Page = ({
         >
           {({ errors, processing }) => (
             <BaseCard className="space-y-5">
-              {JSON.stringify(errors)}
               <h3 className="text-base font-semibold mb-3">User Details</h3>
               <FormInput
                 label="Nama"
