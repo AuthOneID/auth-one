@@ -14,6 +14,7 @@ import { BaseCard } from '~/components/BaseCard'
 import { FormInput } from '~/components/form/FormInput'
 import User from '#models/user'
 import { DeleteDialog } from '~/components/form/DeleteDialog'
+import { ReactSelectClient } from '~/components/form/ReactSelectClient'
 
 const Page = ({
   user,
@@ -65,6 +66,7 @@ const Page = ({
         <Form action={'/admin/users'} method="post">
           {({ errors, processing }) => (
             <BaseCard className="space-y-5">
+              <h3 className="text-base font-semibold mb-3">User Details</h3>
               <input type="hidden" name="id" value={user?.id || ''} />
               <FormInput
                 label="Nama"
@@ -84,6 +86,11 @@ const Page = ({
                 defaultValue={user?.email || ''}
                 error={errors?.email}
               />
+
+              <h3 className="text-base font-semibold mb-3">Permissions</h3>
+              <ReactSelectClient label="Groups" name="" options={[]} />
+              <ReactSelectClient label="Roles" name="" options={[]} />
+              <ReactSelectClient label="Applications" name="" options={[]} />
 
               <Button type="submit" className="w-full" disabled={processing}>
                 <Loader2
