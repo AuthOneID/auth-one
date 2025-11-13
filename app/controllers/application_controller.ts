@@ -82,7 +82,6 @@ export default class ApplicationController {
     })
 
     session.flash('success', 'Application successfully created.')
-    session.flash('id', Date.now())
     session.flash('secret', clientSecret)
 
     return response.redirect(`/admin/applications/${application.id}`)
@@ -93,7 +92,6 @@ export default class ApplicationController {
     await application.delete()
 
     session.flash('success', 'Application successfully deleted.')
-    session.flash('id', Date.now())
 
     return response.redirect('/admin/applications')
   }

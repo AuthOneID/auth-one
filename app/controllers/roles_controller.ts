@@ -58,7 +58,6 @@ export default class RolesController {
     })
 
     session.flash('success', 'Role successfully created.')
-    session.flash('id', Date.now())
 
     return response.redirect('/admin/roles')
   }
@@ -68,7 +67,6 @@ export default class RolesController {
     await role.delete()
 
     session.flash('success', 'Role successfully deleted.')
-    session.flash('id', Date.now())
 
     return response.redirect('/admin/roles')
   }

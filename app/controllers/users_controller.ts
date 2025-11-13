@@ -71,7 +71,6 @@ export default class UsersController {
     })
 
     session.flash('success', 'User successfully created.')
-    session.flash('id', Date.now())
 
     return response.redirect('/admin/users')
   }
@@ -81,7 +80,6 @@ export default class UsersController {
     await user.delete()
 
     session.flash('success', 'User successfully deleted.')
-    session.flash('id', Date.now())
 
     return response.redirect('/admin/users')
   }

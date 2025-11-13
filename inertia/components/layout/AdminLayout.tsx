@@ -12,12 +12,26 @@ export const AdminLayout = ({ children }: { children: React.ReactNode }) => {
   } = usePage<SharedProps & Record<string, unknown>>()
 
   useEffect(() => {
+    if (sessionStorage.getItem('isBackNavigation') === 'true') {
+      sessionStorage.removeItem('isBackNavigation')
+      return
+    }
+
     if (flash?.success) {
       toast.success(flash?.success as string)
     } else if (flash?.error) {
       toast.error(flash?.error as string)
     }
   }, [flash])
+
+  useEffect(() => {
+    const fn = () => sessionStorage.setItem('isBackNavigation', 'true')
+    window.addEventListener('popstate', fn)
+
+    return () => {
+      window.removeEventListener('popstate', fn)
+    }
+  }, [])
 
   return (
     <SidebarProvider>

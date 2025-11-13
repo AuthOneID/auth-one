@@ -58,7 +58,6 @@ export default class GroupsController {
     })
 
     session.flash('success', 'Group successfully created.')
-    session.flash('id', Date.now())
 
     return response.redirect('/admin/groups')
   }
@@ -68,7 +67,6 @@ export default class GroupsController {
     await group.delete()
 
     session.flash('success', 'Group successfully deleted.')
-    session.flash('id', Date.now())
 
     return response.redirect('/admin/groups')
   }
