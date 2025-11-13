@@ -73,7 +73,7 @@ export default class ApplicationController {
     const clientId = string.random(32)
     const clientSecret = string.random(64)
 
-    await Application.create({
+    const application = await Application.create({
       name: validated.name,
       clientId: clientId,
       clientSecret: clientSecret,
@@ -82,8 +82,9 @@ export default class ApplicationController {
 
     session.flash('success', 'Application successfully created.')
     session.flash('id', Date.now())
+    session.flash('secret', clientSecret)
 
-    return response.redirect('/admin/applications')
+    return response.redirect(`/admin/applications/${application.id}`)
   }
 
   public async destroy({ response, params, session }: HttpContext) {

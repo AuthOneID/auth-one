@@ -23,7 +23,7 @@ const Page = ({
 }: {
   errors?: Record<string, string>
   application: Application | null
-  flash: { failure?: string }
+  flash: { failure?: string; secret?: string }
 }) => {
   const [deleteIsOpen, setDeleteIsOpen] = useState(!!flash.failure || false)
 
@@ -70,7 +70,7 @@ const Page = ({
     >
       {application?.id && (
         <BaseCard className="space-y-5 mb-6">
-          <h3 className="text-lg font-semibold">Client Credentials</h3>
+          <h3 className="text-base font-semibold">Client Credentials</h3>
           <div className="space-y-4">
             <div>
               <label className="text-sm font-medium">Client ID</label>
@@ -87,55 +87,56 @@ const Page = ({
                 </Button>
               </div>
             </div>
-            <div>
-              <label className="text-sm font-medium">Client Secret</label>
-              <div className="flex items-center gap-2 mt-1">
-                <code className="flex-1 p-2 bg-muted rounded-md text-sm break-all">
-                  {application.clientSecret}
-                </code>
-                <Button
-                  variant="outline"
-                  size="sm"
-                  onClick={() => copyToClipboard(application.clientSecret, 'Client Secret')}
-                >
-                  <Copy className="h-4 w-4" />
-                </Button>
+            {flash.secret && (
+              <div>
+                <label className="text-sm font-medium">Client Secret</label>
+                <div className="flex items-center gap-2 mt-1">
+                  <code className="flex-1 p-2 bg-muted rounded-md text-sm break-all">
+                    {application.clientSecret}
+                  </code>
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    onClick={() => copyToClipboard(application.clientSecret, 'Client Secret')}
+                  >
+                    <Copy className="h-4 w-4" />
+                  </Button>
+                </div>
               </div>
-            </div>
+            )}
           </div>
         </BaseCard>
       )}
 
-      {
-        <Form action={'/admin/applications'} method="post">
-          {({ errors, processing }) => (
-            <BaseCard className="space-y-5">
-              <input type="hidden" name="id" value={application?.id || ''} />
-              <FormInput
-                label="Name"
-                name="name"
-                defaultValue={application?.name || ''}
-                error={errors?.name}
-              />
-              <FormTextarea
-                label="Redirect URIs"
-                name="redirectUris"
-                defaultValue={application?.redirectUris?.join('\n') || ''}
-                error={errors?.redirectUris}
-                placeholder="Enter one redirect URI per line"
-                rows={6}
-              />
+      <Form action={'/admin/applications'} method="post" className="mb-6">
+        {({ errors, processing }) => (
+          <BaseCard className="space-y-5">
+            <h3 className="text-base font-semibold">Application Details</h3>
+            <input type="hidden" name="id" value={application?.id || ''} />
+            <FormInput
+              label="Name"
+              name="name"
+              defaultValue={application?.name || ''}
+              error={errors?.name}
+            />
+            <FormTextarea
+              label="Redirect URIs"
+              name="redirectUris"
+              defaultValue={application?.redirectUris?.join('\n') || ''}
+              error={errors?.redirectUris}
+              placeholder="Enter one redirect URI per line"
+              rows={6}
+            />
 
-              <Button type="submit" className="w-full" disabled={processing}>
-                <Loader2
-                  className={`h-4 w-4 animate-spin ${processing ? 'opacity-100' : 'opacity-0'}`}
-                />
-                <span className="pr-4">Simpan</span>
-              </Button>
-            </BaseCard>
-          )}
-        </Form>
-      }
+            <Button type="submit" className="w-full" disabled={processing}>
+              <Loader2
+                className={`h-4 w-4 animate-spin ${processing ? 'opacity-100' : 'opacity-0'}`}
+              />
+              <span className="pr-4">Simpan</span>
+            </Button>
+          </BaseCard>
+        )}
+      </Form>
 
       <DeleteDialog
         isOpen={deleteIsOpen}
