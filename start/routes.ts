@@ -19,12 +19,10 @@ const LoginController = () => import('#controllers/login_controller')
 router
   .group(() => {
     router.get('/', [DashboardController, 'index'])
-    router.resource('/users', UsersController).only(['index', 'show', 'store', 'destroy'])
-    router.resource('/roles', RolesController).only(['index', 'show', 'store', 'destroy'])
-    router.resource('/groups', GroupsController).only(['index', 'show', 'store', 'destroy'])
-    router
-      .resource('/applications', ApplicationController)
-      .only(['index', 'show', 'store', 'destroy'])
+    router.resource('/users', UsersController).apiOnly()
+    router.resource('/roles', RolesController).apiOnly()
+    router.resource('/groups', GroupsController).apiOnly()
+    router.resource('/applications', ApplicationController).apiOnly()
   })
   .use([middleware.auth()])
   .prefix('admin')
