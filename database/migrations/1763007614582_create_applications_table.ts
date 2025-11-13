@@ -8,6 +8,10 @@ export default class extends BaseSchema {
       table.uuid('id').primary().defaultTo(this.raw('uuid_generate_v4()'))
       table.string('name').notNullable()
 
+      table.string('client_id').notNullable().unique()
+      table.string('client_secret').notNullable()
+      table.jsonb('redirect_uris').notNullable().defaultTo('[]')
+
       table.timestamp('created_at').notNullable()
       table.timestamp('updated_at').nullable()
     })

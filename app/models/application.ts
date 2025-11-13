@@ -12,6 +12,17 @@ export default class Application extends BaseModel {
   @column()
   declare name: string
 
+  @column()
+  declare clientId: string
+
+  @column()
+  declare clientSecret: string
+
+  @column({
+    prepare: (value: string[]) => JSON.stringify(value),
+  })
+  declare redirectUris: string[]
+
   @column.dateTime({ autoCreate: true })
   declare createdAt: DateTime
 

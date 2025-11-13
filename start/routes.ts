@@ -12,6 +12,7 @@ import { middleware } from './kernel.js'
 const UsersController = () => import('#controllers/users_controller')
 const RolesController = () => import('#controllers/roles_controller')
 const GroupsController = () => import('#controllers/groups_controller')
+const ApplicationController = () => import('#controllers/application_controller')
 const DashboardController = () => import('#controllers/dashboard_controller')
 const LoginController = () => import('#controllers/login_controller')
 
@@ -21,6 +22,9 @@ router
     router.resource('/users', UsersController).only(['index', 'show', 'store', 'destroy'])
     router.resource('/roles', RolesController).only(['index', 'show', 'store', 'destroy'])
     router.resource('/groups', GroupsController).only(['index', 'show', 'store', 'destroy'])
+    router
+      .resource('/applications', ApplicationController)
+      .only(['index', 'show', 'store', 'destroy'])
   })
   .use([middleware.auth()])
   .prefix('admin')

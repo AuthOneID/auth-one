@@ -85,6 +85,7 @@
     "pg": "^8.16.3",
     "react": "^19.2.0",
     "react-dom": "^19.2.0",
+    "react-select": "^5.10.2",
     "reflect-metadata": "^0.2.2",
     "sonner": "^2.0.7",
     "tailwind-merge": "^3.4.0",
