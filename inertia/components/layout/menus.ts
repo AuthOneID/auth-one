@@ -31,15 +31,15 @@ export const menus: Menu[] = [
     children: [
       {
         title: 'Users',
-        url: '/admin/directory/users',
+        url: '/admin/users',
       },
       {
         title: 'Groups',
-        url: '/admin/directory/groups',
+        url: '/admin/groups',
       },
       {
         title: 'Roles',
-        url: '/admin/directory/roles',
+        url: '/admin/roles',
       },
     ],
   },

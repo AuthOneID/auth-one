@@ -1,0 +1,107 @@
+import { ContainerWithBreadcumbs } from '~/components/Container'
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from '~/components/ui/dropdown-menu'
+import { Button } from '~/components/ui/button'
+import { useState } from 'react'
+import { ChevronDown, Loader2, Trash2 } from 'lucide-react'
+import { Form, router } from '@inertiajs/react'
+import { AdminLayout } from '~/components/layout/AdminLayout'
+import { BaseCard } from '~/components/BaseCard'
+import { FormInput } from '~/components/form/FormInput'
+import User from '#models/user'
+import { DeleteDialog } from '~/components/form/DeleteDialog'
+// import { DeleteDialog } from '~/components/form/DeleteDialog'
+
+const Page = ({ user, errors }: { errors?: Record<string, string>; user: User | null }) => {
+  const [deleteIsOpen, setDeleteIsOpen] = useState(false)
+  const [loading] = useState(false)
+
+  return (
+    <ContainerWithBreadcumbs
+      breadcrumbs={[
+        { title: 'Users', to: '/users' },
+        {
+          title: user ? user.fullName || '' : 'Create user',
+          to: '#',
+        },
+      ]}
+      toolbarRight={
+        user?.id ? (
+          <DropdownMenu modal={false}>
+            <DropdownMenuTrigger asChild>
+              <Button
+                variant={'outline'}
+                size={'sm'}
+                className="focus-visible:ring-0 focus-visible:border-0"
+              >
+                More Actions <ChevronDown />
+              </Button>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent>
+              <DropdownMenuItem asChild>
+                <button
+                  className="px-3 py-1.5 text-xs font-medium text-red-700 hover:text-red-700 w-full hover:bg-red-100"
+                  onClick={() => setDeleteIsOpen(true)}
+                >
+                  <Trash2 className="h-3 text-red-700 hover:text-red-700" />
+                  Delete user
+                </button>
+              </DropdownMenuItem>
+            </DropdownMenuContent>
+          </DropdownMenu>
+        ) : undefined
+      }
+    >
+      {
+        <Form action={'/admin/users'} method="post">
+          {({ errors, processing }) => (
+            <BaseCard className="space-y-5">
+              <input type="hidden" name="id" value={user?.id || ''} />
+              <FormInput
+                label="Nama"
+                name="name"
+                defaultValue={user?.fullName || ''}
+                error={errors?.name}
+              />
+              <FormInput
+                label="Username"
+                name="username"
+                defaultValue={user?.username || ''}
+                error={errors?.username}
+              />
+              <FormInput
+                label="Email"
+                name="email"
+                defaultValue={user?.email || ''}
+                error={errors?.email}
+              />
+
+              <Button type="submit" className="w-full" disabled={processing}>
+                <Loader2
+                  className={`h-4 w-4 animate-spin ${processing ? 'opacity-100' : 'opacity-0'}`}
+                />
+                <span className="pr-4">Simpan</span>
+              </Button>
+            </BaseCard>
+          )}
+        </Form>
+      }
+
+      <DeleteDialog
+        isOpen={deleteIsOpen}
+        setIsOpen={setDeleteIsOpen}
+        message={`Are you sure you want to delete ${user?.fullName}? This action will delete all related data and cannot be undone.`}
+        itemName={`user ${user?.fullName}`}
+        url={`/admin/users/${user?.id}`}
+      />
+    </ContainerWithBreadcumbs>
+  )
+}
+
+Page.layout = (page: React.ReactNode) => <AdminLayout>{page}</AdminLayout>
+
+export default Page
