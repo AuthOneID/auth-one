@@ -30,7 +30,7 @@ export const columns: Column<Pengguna & { referensi_name: string }>[] = [
 const Page = ({ data, pagination }: InferPageProps<UsersController, 'index'>) => {
   return (
     <ContainerWithBreadcumbs
-      breadcrumbs={[{ title: 'Users', to: '/users' }]}
+      breadcrumbs={[{ title: 'Users', to: '/admin/users' }]}
       toolbarRight={
         <Link href="/admin/users/create">
           <Button variant={'default'}>Create user</Button>

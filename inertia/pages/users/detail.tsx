@@ -28,7 +28,7 @@ const Page = ({
   return (
     <ContainerWithBreadcumbs
       breadcrumbs={[
-        { title: 'Users', to: '/users' },
+        { title: 'Users', to: '/admin/users' },
         {
           title: user ? user.fullName || '' : 'Create user',
           to: '#',
