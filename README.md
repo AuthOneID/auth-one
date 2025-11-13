@@ -1,10 +1,6 @@
 # AuthOne
 
-<div align="center">
-
-**A Simple, Modern Identity Provider (IDP)**
-
-</div>
+**A Simple and Lightweight Identity Provider (IDP)**
 
 ## 🚀 Overview
 
