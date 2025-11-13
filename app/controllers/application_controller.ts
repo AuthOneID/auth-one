@@ -4,6 +4,7 @@ import vine, { SimpleMessagesProvider } from '@vinejs/vine'
 import { ModelAttributes } from '@adonisjs/lucid/types/model'
 import Application from '#models/application'
 import string from '@adonisjs/core/helpers/string'
+import hash from '@adonisjs/core/services/hash'
 
 vine.messagesProvider = new SimpleMessagesProvider(
   {
@@ -76,7 +77,7 @@ export default class ApplicationController {
     const application = await Application.create({
       name: validated.name,
       clientId: clientId,
-      clientSecret: clientSecret,
+      clientSecret: await hash.use('argon').make(clientSecret),
       redirectUris: redirectUris,
     })
 
