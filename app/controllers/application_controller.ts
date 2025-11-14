@@ -19,7 +19,14 @@ const validator = vine.compile(
   vine.object({
     name: vine.string().minLength(1).maxLength(254),
     redirectUris: vine
-      .array(vine.string().url().maxLength(100))
+      .array(
+        vine
+          .string()
+          .url({
+            require_tld: false,
+          })
+          .maxLength(100)
+      )
       .parse((x) =>
         typeof x === 'string'
           ? x
