@@ -17,6 +17,7 @@ const validator = vine.compile(
     name: vine.string().minLength(1).maxLength(254),
     username: vine.string().maxLength(254).optional().requiredIfMissing('email'),
     email: vine.string().email().maxLength(254).optional(),
+    isActive: vine.boolean().optional(),
     groupIds: vine
       .array(vine.string().uuid())
       .parse((x) => (Array.isArray(x) ? x.filter(Boolean) : []))
@@ -63,6 +64,7 @@ export default class UsersController {
       email: validated.email,
       username: validated.username,
       password: 'temporarypassword',
+      isActive: validated.isActive ?? true,
     })
 
     if (validated.groupIds && validated.groupIds.length > 0) {
@@ -89,6 +91,7 @@ export default class UsersController {
         fullName: validated.name,
         email: validated.email,
         username: validated.username,
+        isActive: validated.isActive ?? true,
       })
       .save()
 

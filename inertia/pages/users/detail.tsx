@@ -15,6 +15,7 @@ import { FormInput } from '~/components/form/FormInput'
 import User from '#models/user'
 import { DeleteDialog } from '~/components/form/DeleteDialog'
 import { ReactAsyncSelect } from '~/components/form/ReactAsyncSelect'
+import { FormSelect } from '~/components/form/FormSelect'
 
 const Page = ({
   user,
@@ -83,6 +84,17 @@ const Page = ({
               name="email"
               defaultValue={user?.email || ''}
               error={errors?.email}
+            />
+            <FormSelect
+              label="Status"
+              name="isActive"
+              defaultValue={user?.isActive ? 'true' : 'false'}
+              error={errors?.isActive}
+              items={[
+                { value: 'true', label: 'Enable' },
+                { value: 'false', label: 'Disable' },
+              ]}
+              placeholder="Select status"
             />
 
             <h3 className="text-base font-semibold mb-3">Access Control</h3>
