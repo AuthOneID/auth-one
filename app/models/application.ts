@@ -13,6 +13,9 @@ export default class Application extends BaseModel {
   declare name: string
 
   @column()
+  declare slug: string
+
+  @column()
   declare clientId: string
 
   @column({ serializeAs: null })
