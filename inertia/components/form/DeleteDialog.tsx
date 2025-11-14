@@ -50,7 +50,7 @@ export const DeleteDialog = ({
               </AlertDescription>
             </Alert>
           )}
-          <div>{message}</div>
+          <div className="text-sm">{message}</div>
         </DialogHeader>
         <DialogFooter>
           <Button

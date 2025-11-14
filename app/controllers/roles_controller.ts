@@ -8,26 +8,27 @@ vine.messagesProvider = new SimpleMessagesProvider(
   {
     required: '{{ field }} field is required',
   },
-  {
-    name: 'Nama',
-  }
+  {}
 )
 
 const validator = vine.compile(
   vine.object({
-    id: vine.string().uuid().optional(),
     name: vine.string().minLength(1).maxLength(254),
   })
 )
 
 export default class RolesController {
-  public async index({ inertia, request }: HttpContext) {
+  public async index({ inertia, request, response }: HttpContext) {
     const query = Role.query()
 
     const results = await getPaginatedResult<ModelAttributes<Role>>(request, query, {
       defaultSort: ['name', 'asc'],
       searchColumns: ['name'],
     })
+
+    if (request.input('json')) {
+      return response.json(results)
+    }
 
     return inertia.render('roles/index', results)
   }
@@ -41,25 +42,26 @@ export default class RolesController {
   public async store({ response, request, session }: HttpContext) {
     const validated = await validator.validate(request.all())
 
-    if (validated.id) {
-      const role = await Role.findOrFail(validated.id)
-      await role
-        .merge({
-          name: validated.name,
-        })
-        .save()
-
-      session.flash('success', 'Role successfully updated.')
-      return response.redirect().back()
-    }
-
     await Role.create({
       name: validated.name,
     })
 
     session.flash('success', 'Role successfully created.')
-
     return response.redirect('/admin/roles')
+  }
+
+  public async update({ response, request, session, params }: HttpContext) {
+    const validated = await validator.validate(request.all())
+
+    const role = await Role.findOrFail(params.id)
+    await role
+      .merge({
+        name: validated.name,
+      })
+      .save()
+
+    session.flash('success', 'Role successfully updated.')
+    return response.redirect().back()
   }
 
   public async destroy({ response, params, session }: HttpContext) {

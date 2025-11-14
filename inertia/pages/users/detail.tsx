@@ -85,7 +85,7 @@ const Page = ({
               error={errors?.email}
             />
 
-            <h3 className="text-base font-semibold mb-3">Permissions</h3>
+            <h3 className="text-base font-semibold mb-3">Access Control</h3>
             <ReactAsyncSelect
               label="Groups"
               name="groupIds[]"

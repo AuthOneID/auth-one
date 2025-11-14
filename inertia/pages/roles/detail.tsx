@@ -61,28 +61,26 @@ const Page = ({
         ) : undefined
       }
     >
-      {
-        <Form action={'/admin/roles'} method="post">
-          {({ errors, processing }) => (
-            <BaseCard className="space-y-5">
-              <input type="hidden" name="id" value={role?.id || ''} />
-              <FormInput
-                label="Name"
-                name="name"
-                defaultValue={role?.name || ''}
-                error={errors?.name}
-              />
+      <Form action={role ? `/admin/roles/${role.id}?_method=PATCH` : '/admin/roles'} method="post">
+        {({ errors, processing }) => (
+          <BaseCard className="space-y-5">
+            <input type="hidden" name="id" value={role?.id || ''} />
+            <FormInput
+              label="Name"
+              name="name"
+              defaultValue={role?.name || ''}
+              error={errors?.name}
+            />
 
-              <Button type="submit" className="w-full" disabled={processing}>
-                <Loader2
-                  className={`h-4 w-4 animate-spin ${processing ? 'opacity-100' : 'opacity-0'}`}
-                />
-                <span className="pr-4">Simpan</span>
-              </Button>
-            </BaseCard>
-          )}
-        </Form>
-      }
+            <Button type="submit" className="w-full" disabled={processing}>
+              <Loader2
+                className={`h-4 w-4 animate-spin ${processing ? 'opacity-100' : 'opacity-0'}`}
+              />
+              <span className="pr-4">Simpan</span>
+            </Button>
+          </BaseCard>
+        )}
+      </Form>
 
       <DeleteDialog
         isOpen={deleteIsOpen}
