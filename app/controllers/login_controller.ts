@@ -14,10 +14,36 @@ export default class LoginController {
     return inertia.render('login/index')
   }
 
-  public async store({ request, response, auth }: HttpContext) {
+  private async handleAuthSuccess(user: User, { request, response, auth }: HttpContext) {
+    await auth.use('web').login(user)
+
+    if (request.input('redirect')) {
+      //
+    }
+
+    console.log(
+      'HAS',
+      user.groups.some((x) => x.isSuperuser)
+    )
+
+    if (user.groups.some((x) => x.isSuperuser)) {
+      return response.redirect('/admin')
+    }
+
+    return response.redirect('/apps')
+  }
+
+  public async store(ctx: HttpContext) {
+    const { request, response, auth } = ctx
     const { username, password } = await validator.validate(request.all())
 
-    const user = await User.findBy('username', username)
+    const user = await User.query()
+      .where((q) => q.where('username', username).orWhere('email', username))
+      .preload('applications')
+      .preload('roles')
+      .preload('groups')
+      .first()
+
     if (!user) {
       throw new errors.E_VALIDATION_ERROR([
         {
@@ -30,8 +56,7 @@ export default class LoginController {
     if (user.password.includes('scrypt')) {
       const isPasswordValid = await hash.use('scrypt').verify(user.password, password)
       if (isPasswordValid) {
-        await auth.use('web').login(user)
-        response.redirect('/dashboard')
+        return this.handleAuthSuccess(user, ctx)
       }
 
       throw new errors.E_VALIDATION_ERROR([
@@ -44,14 +69,12 @@ export default class LoginController {
 
     const isArgonValid = await hash.use('argon').verify(user.password, password)
     if (isArgonValid) {
-      await auth.use('web').login(user)
-      response.redirect('/dashboard')
+      return this.handleAuthSuccess(user, ctx)
     }
 
     const isBcryptValid = await hash.use('bcrypt').verify(user.password, password)
     if (isBcryptValid) {
-      await auth.use('web').login(user)
-      response.redirect('/dashboard')
+      return this.handleAuthSuccess(user, ctx)
     }
 
     throw new errors.E_VALIDATION_ERROR([
