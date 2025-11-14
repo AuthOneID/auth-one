@@ -6,7 +6,7 @@ import {
   DropdownMenuTrigger,
 } from '~/components/ui/dropdown-menu'
 import { Button } from '~/components/ui/button'
-import { useState } from 'react'
+import { useRef, useState } from 'react'
 import { ChevronDown, Loader2, Trash2, Copy } from 'lucide-react'
 import { Form } from '@inertiajs/react'
 import { AdminLayout } from '~/components/layout/AdminLayout'
@@ -27,11 +27,14 @@ const Page = ({
   flash: { failure?: string; secret?: string }
 }) => {
   const [deleteIsOpen, setDeleteIsOpen] = useState(!!flash.failure || false)
+  const [appName, setAppName] = useState(application?.name || '')
 
   const copyToClipboard = (text: string, label: string) => {
     navigator.clipboard.writeText(text)
     toast.success(`${label} copied to clipboard`)
   }
+
+  const debounce = useRef<NodeJS.Timeout | null>(null)
 
   return (
     <ContainerWithBreadcumbs
@@ -155,11 +158,25 @@ const Page = ({
               name="name"
               defaultValue={application?.name || ''}
               error={errors?.name}
+              onChange={(e) => {
+                if (application) {
+                  return
+                }
+
+                if (debounce.current) {
+                  clearTimeout(debounce.current)
+                }
+
+                debounce.current = setTimeout(() => {
+                  setAppName(e.target.value.toLowerCase().replace(/[^a-zA-Z0-9]+/g, '-'))
+                }, 300)
+              }}
             />
             <FormInput
+              key={appName || '-1'}
               label="Slug"
               name="slug"
-              defaultValue={application?.slug || ''}
+              defaultValue={appName || ''}
               error={errors?.slug}
               placeholder="e.g., my-app (leave empty to auto-generate from name)"
             />
