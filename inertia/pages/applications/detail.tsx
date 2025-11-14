@@ -16,6 +16,7 @@ import { FormTextarea } from '~/components/form/FormTextarea'
 import Application from '#models/application'
 import { DeleteDialog } from '~/components/form/DeleteDialog'
 import { toast } from 'sonner'
+import { ReactAsyncSelect } from '~/components/form/ReactAsyncSelect'
 
 const Page = ({
   application,
@@ -136,7 +137,15 @@ const Page = ({
         </BaseCard>
       )}
 
-      <Form action={'/admin/applications'} method="post" className="mb-6">
+      <Form
+        action={
+          application
+            ? `/admin/applications/${application.id}?_method=PATCH`
+            : '/admin/applications'
+        }
+        method="post"
+        className="mb-6"
+      >
         {({ errors, processing }) => (
           <BaseCard className="space-y-5">
             <h3 className="text-base font-semibold">Application Details</h3>
@@ -151,9 +160,54 @@ const Page = ({
               label="Redirect URIs"
               name="redirectUris"
               defaultValue={application?.redirectUris?.join('\n') || ''}
-              error={errors?.redirectUris}
+              error={
+                Object.entries(errors ?? {}).filter(([key]) =>
+                  key.startsWith('redirectUris')
+                )[0]?.[1]
+              }
               placeholder="Enter one redirect URI per line"
               rows={6}
+            />
+
+            <h3 className="text-base font-semibold">Access Control</h3>
+            <ReactAsyncSelect
+              label="Groups"
+              name="groupIds[]"
+              placeholder="Groups"
+              url="/admin/groups?json=1"
+              error={
+                Object.entries(errors ?? {}).filter(([key]) => key.startsWith('groupIds'))[0]?.[1]
+              }
+              defaultValue={(application?.groups as { id: string; name: string }[]) || []}
+              isMulti
+            />
+            <ReactAsyncSelect
+              label="Roles"
+              name="roleIds[]"
+              placeholder="Roles"
+              url="/admin/roles?json=1"
+              error={
+                Object.entries(errors ?? {}).filter(([key]) => key.startsWith('roleIds'))[0]?.[1]
+              }
+              defaultValue={(application?.roles as { id: string; name: string }[]) || []}
+              isMulti
+            />
+            <ReactAsyncSelect
+              label="Users"
+              name="userIds[]"
+              placeholder="Users"
+              url="/admin/users?json=1"
+              error={
+                Object.entries(errors ?? {}).filter(([key]) => key.startsWith('userIds'))[0]?.[1]
+              }
+              defaultValue={
+                (application?.users.map((x) => ({ id: x.id, name: x.fullName })) as {
+                  id: string
+                  name: string
+                }[]) || []
+              }
+              isMulti
+              labelKey="fullName"
             />
 
             <Button type="submit" className="w-full" disabled={processing}>

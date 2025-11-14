@@ -81,10 +81,7 @@ export const ReactAsyncSelect = ({
           multiValue: () => 'inline-flex items-center bg-secondary text-secondary-foreground mr-1',
           multiValueLabel: () => 'px-2 text-xs leading-none',
           multiValueRemove: () =>
-            cn(
-              'flex items-center justify-center p-1',
-              'hover:bg-destructive hover:text-destructive-foreground'
-            ),
+            cn('flex items-center justify-center p-1', 'hover:bg-destructive hover:text-white'),
           valueContainer: () => 'gap-1 flex flex-wrap items-center',
           clearIndicator: () => 'p-1 text-muted-foreground hover:text-foreground',
           dropdownIndicator: () => 'p-1 text-muted-foreground hover:text-foreground',

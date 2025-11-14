@@ -11,25 +11,41 @@ vine.messagesProvider = new SimpleMessagesProvider(
     required: '{{ field }} field is required',
   },
   {
-    name: 'Nama',
-    clientId: 'Client ID',
-    clientSecret: 'Client Secret',
-    redirectUris: 'Redirect URIs',
+    '0': 'input',
   }
 )
 
 const validator = vine.compile(
   vine.object({
-    id: vine.string().uuid().optional(),
     name: vine.string().minLength(1).maxLength(254),
-    clientId: vine.string().optional(),
-    clientSecret: vine.string().optional(),
-    redirectUris: vine.string().optional(),
+    redirectUris: vine
+      .array(vine.string().url().maxLength(100))
+      .parse((x) =>
+        typeof x === 'string'
+          ? x
+              .split('\n')
+              .map((uri) => uri.trim())
+              .filter((uri) => uri.length > 0)
+          : []
+      )
+      .optional(),
+    userIds: vine
+      .array(vine.string().uuid())
+      .parse((x) => (Array.isArray(x) ? x.filter(Boolean) : []))
+      .optional(),
+    groupIds: vine
+      .array(vine.string().uuid())
+      .parse((x) => (Array.isArray(x) ? x.filter(Boolean) : []))
+      .optional(),
+    roleIds: vine
+      .array(vine.string().uuid())
+      .parse((x) => (Array.isArray(x) ? x.filter(Boolean) : []))
+      .optional(),
   })
 )
 
 export default class ApplicationController {
-  public async index({ inertia, request }: HttpContext) {
+  public async index({ inertia, request, response }: HttpContext) {
     const query = Application.query()
 
     const results = await getPaginatedResult<ModelAttributes<Application>>(request, query, {
@@ -37,38 +53,23 @@ export default class ApplicationController {
       searchColumns: ['name', 'client_id'],
     })
 
+    if (request.input('json')) {
+      return response.json(results)
+    }
+
     return inertia.render('applications/index', results)
   }
 
   public async show({ inertia, params }: HttpContext) {
+    const application = await this.getApplication(params.id)
+
     return inertia.render('applications/detail', {
-      application: async () => await this.getApplication(params.id),
+      application: application,
     })
   }
 
   public async store({ response, request, session }: HttpContext) {
     const validated = await validator.validate(request.all())
-
-    // Parse redirect URIs from string (one per line) to array
-    const redirectUris = validated.redirectUris
-      ? validated.redirectUris
-          .split('\n')
-          .map((uri) => uri.trim())
-          .filter((uri) => uri.length > 0)
-      : []
-
-    if (validated.id) {
-      const application = await Application.findOrFail(validated.id)
-      await application
-        .merge({
-          name: validated.name,
-          redirectUris: redirectUris,
-        })
-        .save()
-
-      session.flash('success', 'Application successfully updated.')
-      return response.redirect().back()
-    }
 
     // Generate random client ID and client secret for new applications
     const clientId = string.random(32)
@@ -78,13 +79,48 @@ export default class ApplicationController {
       name: validated.name,
       clientId: clientId,
       clientSecret: await hash.use('argon').make(clientSecret),
-      redirectUris: redirectUris,
+      redirectUris: validated.redirectUris,
     })
+
+    if (validated.userIds && validated.userIds.length > 0) {
+      await application.related('users').attach(validated.userIds)
+    }
+    if (validated.groupIds && validated.groupIds.length > 0) {
+      await application.related('groups').attach(validated.groupIds)
+    }
+    if (validated.roleIds && validated.roleIds.length > 0) {
+      await application.related('roles').attach(validated.roleIds)
+    }
 
     session.flash('success', 'Application successfully created.')
     session.flash('secret', clientSecret)
 
     return response.redirect(`/admin/applications/${application.id}`)
+  }
+
+  public async update({ response, request, session, params }: HttpContext) {
+    const validated = await validator.validate(request.all())
+
+    const application = await Application.findOrFail(params.id)
+    await application
+      .merge({
+        name: validated.name,
+        redirectUris: validated.redirectUris,
+      })
+      .save()
+
+    if (validated.userIds) {
+      await application.related('users').sync(validated.userIds)
+    }
+    if (validated.groupIds) {
+      await application.related('groups').sync(validated.groupIds)
+    }
+    if (validated.roleIds) {
+      await application.related('roles').sync(validated.roleIds)
+    }
+
+    session.flash('success', 'Application successfully updated.')
+    return response.redirect().back()
   }
 
   public async destroy({ response, params, session }: HttpContext) {
@@ -102,7 +138,12 @@ export default class ApplicationController {
     }
 
     try {
-      const application = await Application.query().where('id', id).firstOrFail()
+      const application = await Application.query()
+        .where('id', id)
+        .preload('users')
+        .preload('groups')
+        .preload('roles')
+        .firstOrFail()
       return application
     } catch (error) {
       return null

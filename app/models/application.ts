@@ -15,7 +15,7 @@ export default class Application extends BaseModel {
   @column()
   declare clientId: string
 
-  @column()
+  @column({ serializeAs: null })
   declare clientSecret: string
 
   @column({
