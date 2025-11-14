@@ -43,6 +43,6 @@ router
 
 router
   .group(() => {
-    router.get('/apps/:slug/authorize', [AuthorizesController, 'authorize'])
+    router.get('/authorize', [AuthorizesController, 'authorize'])
   })
   .use([middleware.silentAuth()])

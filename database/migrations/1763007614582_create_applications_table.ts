@@ -9,7 +9,7 @@ export default class extends BaseSchema {
       table.string('name').notNullable()
       table.string('slug').notNullable().unique()
 
-      table.string('client_id').notNullable().unique()
+      table.string('client_id').notNullable().unique().index()
       table.string('client_secret').notNullable()
       table.jsonb('redirect_uris').notNullable().defaultTo('[]')
 
