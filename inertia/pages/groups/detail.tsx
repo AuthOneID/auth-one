@@ -77,15 +77,6 @@ const Page = ({
             />
             <h3 className="text-base font-semibold mb-3">Access Control</h3>
             <ReactAsyncSelect
-              label="Roles"
-              name="roleIds[]"
-              placeholder="Roles"
-              url="/admin/roles?json=1"
-              error={errors?.roleIds}
-              defaultValue={(group?.roles as { id: string; name: string }[]) || []}
-              isMulti
-            />
-            <ReactAsyncSelect
               label="Users"
               name="userIds[]"
               placeholder="Users"
@@ -103,12 +94,12 @@ const Page = ({
               labelKey="fullName"
             />
             <ReactAsyncSelect
-              label="Applications"
-              name="applicationIds[]"
-              placeholder="Applications"
-              url="/admin/applications?json=1"
-              error={errors?.applicationIds}
-              defaultValue={(group?.applications as { id: string; name: string }[]) || []}
+              label="Roles"
+              name="roleIds[]"
+              placeholder="Roles"
+              url="/admin/roles?json=1"
+              error={errors?.roleIds}
+              defaultValue={(group?.roles as { id: string; name: string }[]) || []}
               isMulti
             />
             <Button type="submit" className="w-full" disabled={processing}>

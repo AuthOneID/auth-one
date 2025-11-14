@@ -104,15 +104,6 @@ const Page = ({
               defaultValue={(user?.roles as { id: string; name: string }[]) || []}
               isMulti
             />
-            <ReactAsyncSelect
-              label="Applications"
-              name="applicationIds[]"
-              placeholder="Applications"
-              url="/admin/applications?json=1"
-              error={errors?.applicationIds}
-              defaultValue={(user?.applications as { id: string; name: string }[]) || []}
-              isMulti
-            />
 
             <Button type="submit" className="w-full" disabled={processing}>
               <Loader2
