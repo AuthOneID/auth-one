@@ -8,17 +8,26 @@ import hash from '@adonisjs/core/services/hash'
 
 vine.messagesProvider = new SimpleMessagesProvider(
   {
-    required: '{{ field }} field is required',
+    'required': '{{ field }} field is required',
+    'database.unique': 'The {{ field }} has already been taken',
   },
   {
     '0': 'input',
   }
 )
 
-const validator = vine.compile(
+const createValidator = vine.compile(
   vine.object({
     name: vine.string().minLength(1).maxLength(254),
-    slug: vine.string().minLength(1).maxLength(254).optional(),
+    slug: vine
+      .string()
+      .minLength(1)
+      .maxLength(254)
+      .unique(async (db, value) => {
+        const result = await db.from('applications').where('slug', value).first()
+        return !result
+      })
+      .optional(),
     redirectUris: vine
       .array(
         vine
@@ -52,6 +61,56 @@ const validator = vine.compile(
   })
 )
 
+const updateValidator = (applicationId: string) =>
+  vine.compile(
+    vine.object({
+      name: vine.string().minLength(1).maxLength(254),
+      slug: vine
+        .string()
+        .minLength(1)
+        .maxLength(254)
+        .unique(async (db, value) => {
+          const result = await db
+            .from('applications')
+            .where('slug', value)
+            .whereNot('id', applicationId)
+            .first()
+          return !result
+        })
+        .optional(),
+      redirectUris: vine
+        .array(
+          vine
+            .string()
+            .url({
+              require_tld: false,
+            })
+            .maxLength(100)
+        )
+        .parse((x) =>
+          typeof x === 'string'
+            ? x
+                .split('\n')
+                .map((uri) => uri.trim())
+                .filter((uri) => uri.length > 0)
+            : []
+        )
+        .optional(),
+      userIds: vine
+        .array(vine.string().uuid())
+        .parse((x) => (Array.isArray(x) ? x.filter(Boolean) : []))
+        .optional(),
+      groupIds: vine
+        .array(vine.string().uuid())
+        .parse((x) => (Array.isArray(x) ? x.filter(Boolean) : []))
+        .optional(),
+      roleIds: vine
+        .array(vine.string().uuid())
+        .parse((x) => (Array.isArray(x) ? x.filter(Boolean) : []))
+        .optional(),
+    })
+  )
+
 export default class ApplicationController {
   public async index({ inertia, request, response }: HttpContext) {
     const query = Application.query()
@@ -77,7 +136,7 @@ export default class ApplicationController {
   }
 
   public async store({ response, request, session }: HttpContext) {
-    const validated = await validator.validate(request.all())
+    const validated = await createValidator.validate(request.all())
 
     // Generate random client ID and client secret for new applications
     const clientId = string.random(32)
@@ -108,7 +167,7 @@ export default class ApplicationController {
   }
 
   public async update({ response, request, session, params }: HttpContext) {
-    const validated = await validator.validate(request.all())
+    const validated = await updateValidator(params.id).validate(request.all())
 
     const application = await Application.findOrFail(params.id)
     await application

@@ -7,7 +7,7 @@ export default class extends BaseSchema {
     this.schema.createTable(this.tableName, (table) => {
       table.uuid('id').primary().defaultTo(this.raw('uuid_generate_v4()'))
       table.string('name').notNullable()
-      table.string('slug').notNullable()
+      table.string('slug').notNullable().unique()
 
       table.string('client_id').notNullable().unique()
       table.string('client_secret').notNullable()
