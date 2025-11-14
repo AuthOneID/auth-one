@@ -30,7 +30,7 @@ export default class LoginController {
     if (user.password.includes('scrypt')) {
       const isPasswordValid = await hash.use('scrypt').verify(user.password, password)
       if (isPasswordValid) {
-        await auth.use('web').login(user)
+        await auth.use('web').login(user, true)
         response.redirect('/dashboard')
       }
 
@@ -44,13 +44,13 @@ export default class LoginController {
 
     const isArgonValid = await hash.use('argon').verify(user.password, password)
     if (isArgonValid) {
-      await auth.use('web').login(user)
+      await auth.use('web').login(user, true)
       response.redirect('/dashboard')
     }
 
     const isBcryptValid = await hash.use('bcrypt').verify(user.password, password)
     if (isBcryptValid) {
-      await auth.use('web').login(user)
+      await auth.use('web').login(user, true)
       response.redirect('/dashboard')
     }
 
