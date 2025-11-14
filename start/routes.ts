@@ -29,6 +29,12 @@ router
 
 router
   .group(() => {
+    router.post('logout', [LoginController, 'logout'])
+  })
+  .use([middleware.auth()])
+
+router
+  .group(() => {
     router.get('login', [LoginController, 'show'])
     router.post('login', [LoginController, 'store'])
   })

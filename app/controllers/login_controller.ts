@@ -61,4 +61,9 @@ export default class LoginController {
       },
     ])
   }
+
+  public async logout({ response, auth }: HttpContext) {
+    await auth.use('web').logout()
+    return response.redirect('/login')
+  }
 }
