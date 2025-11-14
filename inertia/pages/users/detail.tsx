@@ -62,72 +62,67 @@ const Page = ({
         ) : undefined
       }
     >
-      {
-        <Form
-          action={user ? `/admin/users/${user.id}?_method=PATCH` : '/admin/users'}
-          method="post"
-        >
-          {({ errors, processing }) => (
-            <BaseCard className="space-y-5">
-              <h3 className="text-base font-semibold mb-3">User Details</h3>
-              <FormInput
-                label="Nama"
-                name="name"
-                defaultValue={user?.fullName || ''}
-                error={errors?.name}
-              />
-              <FormInput
-                label="Username"
-                name="username"
-                defaultValue={user?.username || ''}
-                error={errors?.username}
-              />
-              <FormInput
-                label="Email"
-                name="email"
-                defaultValue={user?.email || ''}
-                error={errors?.email}
-              />
+      <Form action={user ? `/admin/users/${user.id}?_method=PATCH` : '/admin/users'} method="post">
+        {({ errors, processing }) => (
+          <BaseCard className="space-y-5">
+            <h3 className="text-base font-semibold mb-3">User Details</h3>
+            <FormInput
+              label="Nama"
+              name="name"
+              defaultValue={user?.fullName || ''}
+              error={errors?.name}
+            />
+            <FormInput
+              label="Username"
+              name="username"
+              defaultValue={user?.username || ''}
+              error={errors?.username}
+            />
+            <FormInput
+              label="Email"
+              name="email"
+              defaultValue={user?.email || ''}
+              error={errors?.email}
+            />
 
-              <h3 className="text-base font-semibold mb-3">Permissions</h3>
-              <ReactAsyncSelect
-                label="Groups"
-                name="groupIds[]"
-                placeholder="Groups"
-                url="/admin/groups?json=1"
-                error={errors?.groupIds}
-                defaultValue={(user?.groups as { id: string; name: string }[]) || []}
-                isMulti
-              />
-              <ReactAsyncSelect
-                label="Roles"
-                name="roleIds[]"
-                placeholder="Roles"
-                url="/admin/roles?json=1"
-                error={errors?.roleIds}
-                defaultValue={(user?.roles as { id: string; name: string }[]) || []}
-                isMulti
-              />
-              <ReactAsyncSelect
-                label="Applications"
-                name="applicationIds[]"
-                placeholder="Applications"
-                url="/admin/applications?json=1"
-                error={errors?.applicationIds}
-                defaultValue={(user?.applications as { id: string; name: string }[]) || []}
-                isMulti
-              />
+            <h3 className="text-base font-semibold mb-3">Permissions</h3>
+            <ReactAsyncSelect
+              label="Groups"
+              name="groupIds[]"
+              placeholder="Groups"
+              url="/admin/groups?json=1"
+              error={errors?.groupIds}
+              defaultValue={(user?.groups as { id: string; name: string }[]) || []}
+              isMulti
+            />
+            <ReactAsyncSelect
+              label="Roles"
+              name="roleIds[]"
+              placeholder="Roles"
+              url="/admin/roles?json=1"
+              error={errors?.roleIds}
+              defaultValue={(user?.roles as { id: string; name: string }[]) || []}
+              isMulti
+            />
+            <ReactAsyncSelect
+              label="Applications"
+              name="applicationIds[]"
+              placeholder="Applications"
+              url="/admin/applications?json=1"
+              error={errors?.applicationIds}
+              defaultValue={(user?.applications as { id: string; name: string }[]) || []}
+              isMulti
+            />
 
-              <Button type="submit" className="w-full" disabled={processing}>
-                <Loader2
-                  className={`h-4 w-4 animate-spin ${processing ? 'opacity-100' : 'opacity-0'}`}
-                />
-                <span className="pr-4">Simpan</span>
-              </Button>
-            </BaseCard>
-          )}
-        </Form>
-      }
+            <Button type="submit" className="w-full" disabled={processing}>
+              <Loader2
+                className={`h-4 w-4 animate-spin ${processing ? 'opacity-100' : 'opacity-0'}`}
+              />
+              <span className="pr-4">Simpan</span>
+            </Button>
+          </BaseCard>
+        )}
+      </Form>
 
       <DeleteDialog
         isOpen={deleteIsOpen}
