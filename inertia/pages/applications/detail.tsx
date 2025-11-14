@@ -156,6 +156,13 @@ const Page = ({
               defaultValue={application?.name || ''}
               error={errors?.name}
             />
+            <FormInput
+              label="Slug"
+              name="slug"
+              defaultValue={application?.slug || ''}
+              error={errors?.slug}
+              placeholder="e.g., my-app (leave empty to auto-generate from name)"
+            />
             <FormTextarea
               label="Redirect URIs"
               name="redirectUris"

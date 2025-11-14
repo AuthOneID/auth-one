@@ -18,6 +18,7 @@ vine.messagesProvider = new SimpleMessagesProvider(
 const validator = vine.compile(
   vine.object({
     name: vine.string().minLength(1).maxLength(254),
+    slug: vine.string().minLength(1).maxLength(254).optional(),
     redirectUris: vine
       .array(
         vine
@@ -84,6 +85,7 @@ export default class ApplicationController {
 
     const application = await Application.create({
       name: validated.name,
+      slug: validated.slug || string.slug(validated.name),
       clientId: clientId,
       clientSecret: await hash.use('argon').make(clientSecret),
       redirectUris: validated.redirectUris,
@@ -112,6 +114,7 @@ export default class ApplicationController {
     await application
       .merge({
         name: validated.name,
+        slug: validated.slug || string.slug(validated.name),
         redirectUris: validated.redirectUris,
       })
       .save()
