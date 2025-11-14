@@ -25,7 +25,7 @@ router
     router.resource('/groups', GroupsController).apiOnly()
     router.resource('/applications', ApplicationController).apiOnly()
   })
-  .use([middleware.auth()])
+  .use([middleware.auth(), middleware.admin()])
   .prefix('admin')
 
 router
