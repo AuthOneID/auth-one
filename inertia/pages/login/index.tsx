@@ -6,6 +6,9 @@ import { Input } from '~/components/ui/input'
 import { Label } from '~/components/ui/label'
 
 const Page = () => {
+  const params = new URLSearchParams(window.location.search)
+  const redirect = params.get('redirect')
+
   return (
     <div className="bg-muted flex min-h-svh flex-col items-center justify-center gap-6 p-6 md:p-10">
       <div className="flex w-full max-w-sm flex-col gap-6">
@@ -32,6 +35,7 @@ const Page = () => {
 
                     return (
                       <>
+                        {redirect && <input type="hidden" name="redirect" value={redirect} />}
                         <div className="grid gap-2">
                           <Label>Username</Label>
                           <Input placeholder="username" name="username" />

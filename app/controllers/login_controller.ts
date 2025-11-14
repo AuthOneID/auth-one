@@ -1,4 +1,5 @@
 import User from '#models/user'
+import { base64 } from '@adonisjs/core/helpers'
 import type { HttpContext } from '@adonisjs/core/http'
 import hash from '@adonisjs/core/services/hash'
 import vine, { errors } from '@vinejs/vine'
@@ -14,17 +15,13 @@ export default class LoginController {
     return inertia.render('login/index')
   }
 
-  private async handleAuthSuccess(user: User, { request, response, auth }: HttpContext) {
+  private async handleAuthSuccess(user: User, { request, response, auth, inertia }: HttpContext) {
     await auth.use('web').login(user)
 
-    if (request.input('redirect')) {
-      //
+    const redirect = request.input('redirect')
+    if (redirect) {
+      return inertia.location(base64.urlDecode(redirect) || '/')
     }
-
-    console.log(
-      'HAS',
-      user.groups.some((x) => x.isSuperuser)
-    )
 
     if (user.groups.some((x) => x.isSuperuser)) {
       return response.redirect('/admin')
@@ -34,7 +31,7 @@ export default class LoginController {
   }
 
   public async store(ctx: HttpContext) {
-    const { request, response, auth } = ctx
+    const { request } = ctx
     const { username, password } = await validator.validate(request.all())
 
     const user = await User.query()
