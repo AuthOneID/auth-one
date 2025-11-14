@@ -15,6 +15,7 @@ import { FormInput } from '~/components/form/FormInput'
 import Group from '#models/group'
 import { DeleteDialog } from '~/components/form/DeleteDialog'
 import { ReactAsyncSelect } from '~/components/form/ReactAsyncSelect'
+import { FormSelect } from '~/components/form/FormSelect'
 
 const Page = ({
   group,
@@ -74,6 +75,17 @@ const Page = ({
               name="name"
               defaultValue={group?.name || ''}
               error={errors?.name}
+            />
+            <FormSelect
+              label="Superuser"
+              name="isSuperuser"
+              defaultValue={group?.isSuperuser ? 'true' : 'false'}
+              error={errors?.isSuperuser}
+              items={[
+                { value: 'true', label: 'Yes' },
+                { value: 'false', label: 'No' },
+              ]}
+              placeholder="Select option"
             />
             <h3 className="text-base font-semibold mb-3">Access Control</h3>
             <ReactAsyncSelect

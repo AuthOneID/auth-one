@@ -12,6 +12,9 @@ export default class Group extends BaseModel {
   @column()
   declare name: string
 
+  @column()
+  declare isSuperuser: boolean
+
   @column.dateTime({ autoCreate: true })
   declare createdAt: DateTime
 

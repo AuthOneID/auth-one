@@ -14,6 +14,7 @@ vine.messagesProvider = new SimpleMessagesProvider(
 const validator = vine.compile(
   vine.object({
     name: vine.string().minLength(1).maxLength(254),
+    isSuperuser: vine.boolean().optional(),
     roleIds: vine
       .array(vine.string().uuid())
       .parse((x) => (Array.isArray(x) ? x.filter(Boolean) : []))
@@ -58,6 +59,7 @@ export default class GroupsController {
 
     const group = await Group.create({
       name: validated.name,
+      isSuperuser: validated.isSuperuser || false,
     })
 
     if (validated.roleIds && validated.roleIds.length > 0) {
@@ -75,6 +77,7 @@ export default class GroupsController {
     await group
       .merge({
         name: validated.name,
+        isSuperuser: validated.isSuperuser || false,
       })
       .save()
 

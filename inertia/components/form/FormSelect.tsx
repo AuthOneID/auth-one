@@ -1,5 +1,13 @@
 import { Label } from '../ui/label'
 import { FormItem } from './FormItem'
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '~/components/ui/select'
+import { FormMessage } from './FormMessage'
 
 export const FormSelect = ({
   label,
@@ -19,7 +27,7 @@ export const FormSelect = ({
   return (
     <FormItem>
       <Label htmlFor={name}>{label}</Label>
-      {/* <Select name={name} defaultValue={defaultValue}>
+      <Select name={name} defaultValue={defaultValue}>
         <SelectTrigger className="w-full">
           <SelectValue placeholder={placeholder || 'Select item'} />
         </SelectTrigger>
@@ -37,7 +45,7 @@ export const FormSelect = ({
           )}
         </SelectContent>
       </Select>
-      <FormMessage error={error} /> */}
+      <FormMessage error={error} />
     </FormItem>
   )
 }
