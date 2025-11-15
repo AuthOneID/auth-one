@@ -14,7 +14,6 @@ export const existsAsync = async (path: string): Promise<boolean> => {
 
 export const generateKey = async () => {
   if ((await existsAsync('keys/private.pem')) && (await existsAsync('keys/public.pem'))) {
-    console.log('Keys already exist, skipping generation')
     return
   }
 
