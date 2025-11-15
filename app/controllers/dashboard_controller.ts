@@ -55,4 +55,8 @@ export default class DashboardController {
       loginData,
     })
   }
+
+  public async root({ response }: HttpContext) {
+    return response.redirect('/apps')
+  }
 }

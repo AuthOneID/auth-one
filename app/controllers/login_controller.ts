@@ -23,10 +23,6 @@ export default class LoginController {
       return inertia.location(base64.urlDecode(redirect) || '/')
     }
 
-    if (user.groups.some((x) => x.isSuperuser)) {
-      return response.redirect('/admin')
-    }
-
     return response.redirect('/apps')
   }
 
