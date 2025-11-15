@@ -1,6 +1,7 @@
 import Group from '#models/group'
 import User from '#models/user'
 import type { ApplicationService } from '@adonisjs/core/types'
+import { generateKey } from '../app/lib/jwt.js'
 
 export default class AppProvider {
   constructor(protected app: ApplicationService) {}
@@ -24,6 +25,7 @@ export default class AppProvider {
    * The process has been started
    */
   async ready() {
+    await generateKey()
     const groupExist = await Group.query().first()
     let groupId = groupExist?.id
     if (!groupExist) {
