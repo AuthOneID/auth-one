@@ -57,10 +57,14 @@ const generateTokenResponseData = async (
 ) => {
   const idTokenPayload: JWTPayload = {
     name: user.fullName,
+    username: user.username,
+    email: user.email,
   }
 
   const accessTokenPayload: JWTPayload = {
     name: user.fullName,
+    username: user.username,
+    email: user.email,
     groups: user.groups.map((g) => g.name).join(','),
     roles: user.roles.map((r) => r.name).join(','),
     applications: user.applications.map((a) => a.name).join(','),
