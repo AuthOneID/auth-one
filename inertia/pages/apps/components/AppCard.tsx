@@ -7,7 +7,7 @@ export function AppCard({ name, icon }: { name: string; icon?: string }) {
           {icon ? (
             <img src={icon} alt={`${name} icon`} className="w-12 h-12 object-contain" />
           ) : (
-            <span className="text-3xl">🖥️</span>
+            <span className="text-3xl">�</span>
           )}
         </div>
 
