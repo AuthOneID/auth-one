@@ -1,6 +1,7 @@
 import Group from '#models/group'
 import User from '#models/user'
 import type { ApplicationService } from '@adonisjs/core/types'
+import string from '@adonisjs/core/helpers/string'
 import { generateKey } from '../app/lib/jwt.js'
 
 export default class AppProvider {
@@ -38,12 +39,17 @@ export default class AppProvider {
 
     const userExist = await User.query().first()
     if (!userExist) {
+      const password = string.random(10)
       const user = await User.create({
         email: '',
         fullName: 'AuthOne Admin',
-        password: 'admin',
-        username: 'admin',
+        password: password,
+        username: 'authone',
       })
+
+      console.warn('\n\nDefault admin user created:')
+      console.warn('Username: authone')
+      console.warn(`Password: ${password}\n\n`)
 
       user.related('groups').attach([groupId!])
     }
