@@ -9,6 +9,7 @@ import { signIdToken } from '../lib/jwt.js'
 import { JWTPayload } from 'jose'
 import env from '#start/env'
 import crypto from 'node:crypto'
+import { readFile } from 'node:fs/promises'
 
 const schema = vine.object({
   response_type: vine.enum(['code']),
@@ -217,6 +218,56 @@ export default class AuthorizesController {
     }
 
     return response.json(await generateTokenResponseData(user, data.client_id, request.host()))
+  }
+
+  /**
+   * GET /.well-known/jwks.json
+   * Returns the JSON Web Key Set (JWKS) for token verification
+   */
+  public async getJwks({ response }: HttpContext) {
+    try {
+      const jwkContent = await readFile('keys/public.jwk.json', 'utf8')
+      const jwk = JSON.parse(jwkContent)
+
+      // Add 'use' and 'alg' fields for better OIDC compliance
+      const jwks = {
+        keys: [
+          {
+            ...jwk,
+            use: 'sig', // This key is used for signature verification
+            alg: 'EdDSA', // Algorithm used
+          },
+        ],
+      }
+
+      return response.json(jwks)
+    } catch (error) {
+      return response.internalServerError({ error: 'Failed to load JWKS' })
+    }
+  }
+
+  /**
+   * GET /.well-known/openid-configuration
+   * Returns the OpenID Connect Discovery document
+   */
+  public async getOpenidConfig({ request, response }: HttpContext) {
+    const baseUrl = `${request.protocol()}://${request.host()}`
+
+    const config = {
+      issuer: baseUrl,
+      authorization_endpoint: `${baseUrl}/authorize`,
+      token_endpoint: `${baseUrl}/oauth/token`,
+      jwks_uri: `${baseUrl}/.well-known/jwks.json`,
+      response_types_supported: ['code'],
+      grant_types_supported: ['authorization_code', 'refresh_token'],
+      subject_types_supported: ['public'],
+      id_token_signing_alg_values_supported: ['EdDSA'],
+      scopes_supported: ['openid', 'profile'],
+      token_endpoint_auth_methods_supported: ['client_secret_post'],
+      claims_supported: ['sub', 'name', 'iss', 'aud', 'exp', 'iat'],
+    }
+
+    return response.json(config)
   }
 }
 

@@ -1,6 +1,6 @@
 // scripts/generate-ed25519.js
 import { generateKeyPairSync } from 'node:crypto'
-import { importSPKI, exportJWK, importPKCS8, SignJWT, JWTPayload } from 'jose'
+import { importSPKI, exportJWK, importPKCS8, SignJWT, JWTPayload, jwtVerify } from 'jose'
 import { access, mkdir, readFile, writeFile } from 'node:fs/promises'
 
 export const existsAsync = async (path: string): Promise<boolean> => {
@@ -46,8 +46,13 @@ export const signIdToken = async (
   const privPem = await readFile('keys/private.pem', 'utf8')
   const privateKey = await importPKCS8(privPem, 'EdDSA')
 
+  // Read the kid from the JWK file
+  const jwkContent = await readFile('keys/public.jwk.json', 'utf8')
+  const jwk = JSON.parse(jwkContent)
+  const kid = jwk.kid
+
   const jwt = await new SignJWT(payload)
-    .setProtectedHeader({ alg: 'EdDSA', kid: 'kid-current' })
+    .setProtectedHeader({ alg: 'EdDSA', kid })
     .setSubject(subject)
     .setIssuer(issuer)
     .setAudience(audience)
