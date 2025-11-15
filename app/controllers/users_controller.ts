@@ -12,23 +12,42 @@ vine.messagesProvider = new SimpleMessagesProvider(
   {}
 )
 
-const validator = vine.compile(
+const schema = vine.object({
+  name: vine.string().minLength(1).maxLength(254),
+  username: vine.string().maxLength(254).optional().requiredIfMissing('email'),
+  email: vine.string().email().maxLength(254).optional(),
+  isActive: vine.boolean().optional(),
+  groupIds: vine
+    .array(vine.string().uuid())
+    .parse((x) => (Array.isArray(x) ? x.filter(Boolean) : []))
+    .optional(),
+  roleIds: vine
+    .array(vine.string().uuid())
+    .parse((x) => (Array.isArray(x) ? x.filter(Boolean) : []))
+    .optional(),
+  applicationIds: vine
+    .array(vine.string().uuid())
+    .parse((x) => (Array.isArray(x) ? x.filter(Boolean) : []))
+    .optional(),
+})
+
+const createValidator = vine.compile(
   vine.object({
-    name: vine.string().minLength(1).maxLength(254),
-    username: vine.string().maxLength(254).optional().requiredIfMissing('email'),
-    email: vine.string().email().maxLength(254).optional(),
-    isActive: vine.boolean().optional(),
-    groupIds: vine
-      .array(vine.string().uuid())
-      .parse((x) => (Array.isArray(x) ? x.filter(Boolean) : []))
-      .optional(),
-    roleIds: vine
-      .array(vine.string().uuid())
-      .parse((x) => (Array.isArray(x) ? x.filter(Boolean) : []))
-      .optional(),
-    applicationIds: vine
-      .array(vine.string().uuid())
-      .parse((x) => (Array.isArray(x) ? x.filter(Boolean) : []))
+    ...schema.getProperties(),
+    password: vine.string().minLength(8).confirmed({
+      confirmationField: 'passwordConfirmation',
+    }),
+  })
+)
+const updateValidator = vine.compile(
+  vine.object({
+    ...schema.getProperties(),
+    password: vine
+      .string()
+      .minLength(8)
+      .confirmed({
+        confirmationField: 'passwordConfirmation',
+      })
       .optional(),
   })
 )
@@ -57,13 +76,13 @@ export default class UsersController {
   }
 
   public async store({ response, request, session }: HttpContext) {
-    const validated = await validator.validate(request.all())
+    const validated = await createValidator.validate(request.all())
 
     const user = await User.create({
       fullName: validated.name,
       email: validated.email,
       username: validated.username,
-      password: 'temporarypassword',
+      password: validated.password,
       isActive: validated.isActive ?? true,
     })
 
@@ -83,17 +102,22 @@ export default class UsersController {
   }
 
   public async update({ response, request, session, params }: HttpContext) {
-    const validated = await validator.validate(request.all())
+    const validated = await updateValidator.validate(request.all())
 
     const user = await User.findOrFail(params.id)
-    await user
-      .merge({
-        fullName: validated.name,
-        email: validated.email,
-        username: validated.username,
-        isActive: validated.isActive ?? true,
-      })
-      .save()
+    const updateData: any = {
+      fullName: validated.name,
+      email: validated.email,
+      username: validated.username,
+      isActive: validated.isActive ?? true,
+    }
+
+    // Only update password if provided
+    if (validated.password) {
+      updateData.password = validated.password
+    }
+
+    await user.merge(updateData).save()
 
     if (validated.groupIds) {
       await user.related('groups').sync(validated.groupIds)

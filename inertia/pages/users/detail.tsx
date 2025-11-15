@@ -16,6 +16,8 @@ import User from '#models/user'
 import { DeleteDialog } from '~/components/form/DeleteDialog'
 import { ReactAsyncSelect } from '~/components/form/ReactAsyncSelect'
 import { FormSelect } from '~/components/form/FormSelect'
+import { Switch } from '~/components/ui/switch'
+import { Label } from '~/components/ui/label'
 
 const Page = ({
   user,
@@ -26,6 +28,7 @@ const Page = ({
   flash: { failure?: string }
 }) => {
   const [deleteIsOpen, setDeleteIsOpen] = useState(!!flash.failure || false)
+  const [showPassword, setShowPassword] = useState(false)
 
   return (
     <ContainerWithBreadcumbs
@@ -85,6 +88,57 @@ const Page = ({
               defaultValue={user?.email || ''}
               error={errors?.email}
             />
+
+            <div className="space-y-4">
+              {!!user && (
+                <div className="flex items-center justify-between">
+                  <Label htmlFor="show-password" className="text-sm font-medium">
+                    Set Password
+                  </Label>
+                  <div className="flex items-center gap-2">
+                    <span className="text-xs text-muted-foreground">
+                      {showPassword ? 'Hide' : 'Show'}
+                    </span>
+                    <Switch
+                      id="show-password"
+                      checked={showPassword}
+                      onCheckedChange={setShowPassword}
+                    />
+                  </div>
+                </div>
+              )}
+
+              {showPassword ||
+                (!user && (
+                  <div className="space-y-4">
+                    <FormInput
+                      label="Password"
+                      name="password"
+                      type="password"
+                      placeholder="Enter new password"
+                      error={errors?.password}
+                    />
+                    <FormInput
+                      label="Password Confirmation"
+                      name="passwordConfirmation"
+                      type="password"
+                      placeholder="Confirm new password"
+                      error={errors?.passwordConfirmation}
+                    />
+                    {!user && (
+                      <p className="text-xs text-muted-foreground">
+                        Password must be at least 8 characters long.
+                      </p>
+                    )}
+                    {user && (
+                      <p className="text-xs text-muted-foreground">
+                        Leave blank to keep current password.
+                      </p>
+                    )}
+                  </div>
+                ))}
+            </div>
+
             <FormSelect
               label="Status"
               name="isActive"
