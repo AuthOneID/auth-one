@@ -1,6 +1,6 @@
 // scripts/generate-ed25519.js
 import { generateKeyPairSync } from 'node:crypto'
-import { importSPKI, exportJWK, importPKCS8, SignJWT, JWTPayload, jwtVerify } from 'jose'
+import { importSPKI, exportJWK, importPKCS8, SignJWT, JWTPayload } from 'jose'
 import { access, mkdir, readFile, writeFile } from 'node:fs/promises'
 
 export const existsAsync = async (path: string): Promise<boolean> => {
