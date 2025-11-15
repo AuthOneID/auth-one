@@ -34,7 +34,7 @@ export const generateKey = async () => {
   console.log('Generated keys in ./keys/, jwk:', jwk.kid)
 }
 
-export const signIdToken = async (
+export const signAuthToken = async (
   payload: JWTPayload,
   {
     expiry,

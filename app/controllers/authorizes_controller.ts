@@ -5,7 +5,7 @@ import type { HttpContext } from '@adonisjs/core/http'
 import vine from '@vinejs/vine'
 import cache from '@adonisjs/cache/services/main'
 import User from '#models/user'
-import { signIdToken } from '../lib/jwt.js'
+import { signAuthToken } from '../lib/jwt.js'
 import { JWTPayload } from 'jose'
 import env from '#start/env'
 import crypto from 'node:crypto'
@@ -82,13 +82,13 @@ const generateTokenResponseData = async (
   }
 
   const responseData = {
-    id_token: await signIdToken(idTokenPayload, {
+    id_token: await signAuthToken(idTokenPayload, {
       expiry: '1h',
       audience: clientId,
       issuer: host ?? 'AuthOne',
       subject: user.id,
     }),
-    access_token: await signIdToken(accessTokenPayload, {
+    access_token: await signAuthToken(accessTokenPayload, {
       expiry: '1h',
       audience: clientId,
       issuer: host ?? 'AuthOne',
