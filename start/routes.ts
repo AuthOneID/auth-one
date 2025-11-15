@@ -46,3 +46,7 @@ router
     router.get('/authorize', [AuthorizesController, 'authorize'])
   })
   .use([middleware.silentAuth()])
+
+router.group(() => {
+  router.post('/oauth/token', [AuthorizesController, 'oauthToken'])
+})

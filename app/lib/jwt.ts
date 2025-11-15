@@ -35,18 +35,26 @@ export const generateKey = async () => {
   console.log('Generated keys in ./keys/, jwk:', jwk.kid)
 }
 
-export const signIdToken = async (payload: JWTPayload) => {
+export const signIdToken = async (
+  payload: JWTPayload,
+  {
+    expiry,
+    audience,
+    issuer,
+    subject,
+  }: { expiry: string; audience: string; issuer: string; subject: string }
+) => {
   const privPem = await readFile('keys/private.pem', 'utf8')
   const privateKey = await importPKCS8(privPem, 'EdDSA')
 
   const jwt = await new SignJWT(payload)
     .setProtectedHeader({ alg: 'EdDSA', kid: 'kid-current' })
-    .setIssuer('https://idp.example.com')
-    .setAudience('my-client-id')
-    .setExpirationTime('1h')
+    .setSubject(subject)
+    .setIssuer(issuer)
+    .setAudience(audience)
+    .setExpirationTime(expiry)
     .setIssuedAt()
     .sign(privateKey)
 
-  console.log(jwt)
   return jwt
 }
