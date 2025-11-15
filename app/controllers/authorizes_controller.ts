@@ -7,6 +7,8 @@ import cache from '@adonisjs/cache/services/main'
 import User from '#models/user'
 import { signIdToken } from '../lib/jwt.js'
 import { JWTPayload } from 'jose'
+import env from '#start/env'
+import crypto from 'node:crypto'
 
 const schema = vine.object({
   response_type: vine.enum(['code']),
@@ -24,6 +26,67 @@ const oauthTokenSchema = vine.object({
   redirect_uri: vine.string().url({ require_tld: false }).maxLength(256),
 })
 const oauthTokenValidator = vine.compile(oauthTokenSchema)
+
+const refreshTokenSchema = vine.object({
+  refresh_token: vine.string().minLength(1).maxLength(256),
+  client_id: vine.string().minLength(1).maxLength(256),
+  grant_type: vine.enum(['refresh_token']),
+})
+const refreshTokenValidator = vine.compile(refreshTokenSchema)
+
+const generateTokenResponseData = async (
+  user: User,
+  clientId: string,
+  host: string | null,
+  generateRefreshToken?: boolean
+) => {
+  const idTokenPayload: JWTPayload = {
+    name: user.fullName,
+  }
+
+  const accessTokenPayload: JWTPayload = {
+    name: user.fullName,
+    groups: user.groups.map((g) => g.name).join(','),
+    roles: user.roles.map((r) => r.name).join(','),
+    applications: user.applications.map((a) => a.name).join(','),
+  }
+  const refreshToken = generateRefreshToken ? stringHelpers.generateRandom(120) : undefined
+  const hashedRefreshToken = refreshToken
+    ? crypto.createHmac('sha256', env.get('APP_KEY')).update(refreshToken).digest('hex')
+    : undefined
+
+  if (hashedRefreshToken) {
+    await cache.set({
+      key: `refreshToken:${hashedRefreshToken}`,
+      value: {
+        user_id: user.id,
+        client_id: clientId,
+      },
+      ttl: '14d',
+    })
+  }
+
+  const responseData = {
+    id_token: await signIdToken(idTokenPayload, {
+      expiry: '1h',
+      audience: clientId,
+      issuer: host ?? 'AuthOne',
+      subject: user.id,
+    }),
+    access_token: await signIdToken(accessTokenPayload, {
+      expiry: '1h',
+      audience: clientId,
+      issuer: host ?? 'AuthOne',
+      subject: user.id,
+    }),
+    scope: 'openid profile',
+    expires_in: 60 * 60,
+    token_type: 'Bearer',
+    refresh_token: refreshToken,
+  }
+
+  return responseData
+}
 
 export default class AuthorizesController {
   public async authorize({ response, auth, request }: HttpContext) {
@@ -112,36 +175,48 @@ export default class AuthorizesController {
 
     await cache.delete({ key: `redeemCode:${validated!.code}` })
 
-    const idTokenPayload: JWTPayload = {
-      name: user.fullName,
+    return response.json(
+      await generateTokenResponseData(user, data.client_id, request.host(), true)
+    )
+  }
+
+  public async refreshToken({ response, request }: HttpContext) {
+    const [error, validated] = await refreshTokenValidator.tryValidate(request.all())
+    if (error?.messages[0]?.message) {
+      return response.unprocessableEntity(error?.messages[0]?.message)
     }
 
-    const accessTokenPayload: JWTPayload = {
-      name: user.fullName,
-      groups: user.groups.map((g) => g.name).join(','),
-      roles: user.roles.map((r) => r.name).join(','),
-      applications: user.applications.map((a) => a.name).join(','),
+    const hashedRefreshToken = crypto
+      .createHmac('sha256', env.get('APP_KEY'))
+      .update(validated!.refresh_token)
+      .digest('hex')
+    const data = await cache.get<{
+      user_id: string
+      client_id: string
+    }>({ key: `refreshToken:${hashedRefreshToken}` })
+
+    if (!data) {
+      return response.unauthorized({ error: 'Invalid or expired refresh token.' })
     }
 
-    const responseData = {
-      id_token: await signIdToken(idTokenPayload, {
-        expiry: '1h',
-        audience: data.client_id,
-        issuer: request.host() ?? 'AuthOne',
-        subject: user.id,
-      }),
-      access_token: await signIdToken(accessTokenPayload, {
-        expiry: '1h',
-        audience: data.client_id,
-        issuer: request.host() ?? 'AuthOne',
-        subject: user.id,
-      }),
-      scope: 'openid profile',
-      expires_in: 60 * 60,
-      token_type: 'Bearer',
+    if (data.client_id !== validated!.client_id) {
+      return response.unauthorized({ error: 'Client ID mismatch.' })
     }
 
-    return response.json(responseData)
+    const user = await User.query()
+      .where('id', data.user_id)
+      .where('isActive', true)
+      .preload('applications', (q) => q.select('name'))
+      .preload('groups', (q) => q.select('name'))
+      .preload('roles', (q) => q.select('name'))
+      .first()
+
+    if (!user) {
+      await cache.delete({ key: `refreshToken:${hashedRefreshToken}` })
+      return response.unauthorized({ error: 'User not found or inactive.' })
+    }
+
+    return response.json(await generateTokenResponseData(user, data.client_id, request.host()))
   }
 }
 
