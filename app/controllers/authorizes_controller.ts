@@ -10,6 +10,7 @@ import { JWTPayload } from 'jose'
 import env from '#start/env'
 import crypto from 'node:crypto'
 import { readFile } from 'node:fs/promises'
+import { Infer } from '@vinejs/vine/types'
 
 const schema = vine.object({
   response_type: vine.enum(['code']),
@@ -20,20 +21,33 @@ const schema = vine.object({
 const validator = vine.compile(schema)
 
 const oauthTokenSchema = vine.object({
-  code: vine.string().minLength(1).maxLength(256),
-  grant_type: vine.enum(['authorization_code']),
+  grant_type: vine.enum(['authorization_code', 'refresh_token']),
   client_id: vine.string().minLength(1).maxLength(100),
   client_secret: vine.string().minLength(1).maxLength(200),
-  redirect_uri: vine.string().url({ require_tld: false }).maxLength(256),
+
+  // Code grant specific
+  redirect_uri: vine
+    .string()
+    .url({ require_tld: false })
+    .maxLength(256)
+    .optional()
+    .requiredWhen('grant_type', '=', 'authorization_code'),
+  code: vine
+    .string()
+    .minLength(1)
+    .maxLength(256)
+    .optional()
+    .requiredWhen('grant_type', '=', 'authorization_code'),
+
+  // Refresh token grant specific
+  refresh_token: vine
+    .string()
+    .minLength(1)
+    .maxLength(256)
+    .optional()
+    .requiredWhen('grant_type', '=', 'refresh_token'),
 })
 const oauthTokenValidator = vine.compile(oauthTokenSchema)
-
-const refreshTokenSchema = vine.object({
-  refresh_token: vine.string().minLength(1).maxLength(256),
-  client_id: vine.string().minLength(1).maxLength(256),
-  grant_type: vine.enum(['refresh_token']),
-})
-const refreshTokenValidator = vine.compile(refreshTokenSchema)
 
 const generateTokenResponseData = async (
   user: User,
@@ -153,6 +167,22 @@ export default class AuthorizesController {
       return response.unprocessableEntity(error?.messages[0]?.message)
     }
 
+    if (validated?.grant_type === 'authorization_code') {
+      return await this.authCode(validated!, response, request)
+    }
+
+    if (validated?.grant_type === 'refresh_token') {
+      return await this.refreshToken(validated!, response, request)
+    }
+
+    return response.badRequest({ error: 'Unsupported grant_type' })
+  }
+
+  private async authCode(
+    validated: Infer<typeof oauthTokenSchema>,
+    response: HttpContext['response'],
+    request: HttpContext['request']
+  ) {
     const data = await cache.get<{
       code: string
       client_id: string
@@ -181,15 +211,14 @@ export default class AuthorizesController {
     )
   }
 
-  public async refreshToken({ response, request }: HttpContext) {
-    const [error, validated] = await refreshTokenValidator.tryValidate(request.all())
-    if (error?.messages[0]?.message) {
-      return response.unprocessableEntity(error?.messages[0]?.message)
-    }
-
+  private async refreshToken(
+    validated: Infer<typeof oauthTokenSchema>,
+    response: HttpContext['response'],
+    request: HttpContext['request']
+  ) {
     const hashedRefreshToken = crypto
       .createHmac('sha256', env.get('APP_KEY'))
-      .update(validated!.refresh_token)
+      .update(validated.refresh_token!)
       .digest('hex')
     const data = await cache.get<{
       user_id: string
