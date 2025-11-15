@@ -2,6 +2,7 @@ import { DropdownUser } from '~/components/layout/user_dropdown'
 import { AppCard } from './components/AppCard'
 import { Button } from '~/components/ui/button'
 import { Link } from '@inertiajs/react'
+import { KeyRound } from 'lucide-react'
 
 interface AppsProps {
   apps: any[]
@@ -20,7 +21,9 @@ const Page = ({ apps, isSuperAdmin }: AppsProps) => {
           {isSuperAdmin && (
             <div>
               <Button variant="outline" size="sm" className="hidden md:inline-flex" asChild>
-                <Link href={'/admin'}>Admin</Link>
+                <Link href={'/admin'}>
+                  <KeyRound /> Admin
+                </Link>
               </Button>
             </div>
           )}
