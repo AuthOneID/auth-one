@@ -162,11 +162,9 @@ const Page = ({
                 if (application) {
                   return
                 }
-
                 if (debounce.current) {
                   clearTimeout(debounce.current)
                 }
-
                 debounce.current = setTimeout(() => {
                   setAppName(e.target.value.toLowerCase().replace(/[^a-zA-Z0-9]+/g, '-'))
                 }, 300)
@@ -179,6 +177,13 @@ const Page = ({
               defaultValue={appName || ''}
               error={errors?.slug}
               placeholder="e.g., my-app (leave empty to auto-generate from name)"
+            />
+            <FormInput
+              label="App URL"
+              name="appUrl"
+              type="url"
+              defaultValue={application?.appUrl || ''}
+              error={errors?.appUrl}
             />
             <FormTextarea
               label="Redirect URIs"

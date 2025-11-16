@@ -54,10 +54,8 @@ const createValidator = vine.compile(
       .array(vine.string().uuid())
       .parse((x) => (Array.isArray(x) ? x.filter(Boolean) : []))
       .optional(),
-    roleIds: vine
-      .array(vine.string().uuid())
-      .parse((x) => (Array.isArray(x) ? x.filter(Boolean) : []))
-      .optional(),
+    roleIds: vine.array(vine.string().uuid()).optional(),
+    appUrl: vine.string().maxLength(254).optional(),
   })
 )
 
@@ -104,10 +102,8 @@ const updateValidator = (applicationId: string) =>
         .array(vine.string().uuid())
         .parse((x) => (Array.isArray(x) ? x.filter(Boolean) : []))
         .optional(),
-      roleIds: vine
-        .array(vine.string().uuid())
-        .parse((x) => (Array.isArray(x) ? x.filter(Boolean) : []))
-        .optional(),
+      roleIds: vine.array(vine.string().uuid()).optional(),
+      appUrl: vine.string().url({ require_tld: false }).maxLength(254).optional(),
     })
   )
 
@@ -148,6 +144,7 @@ export default class ApplicationController {
       clientId: clientId,
       clientSecret: await hash.use('argon').make(clientSecret),
       redirectUris: validated.redirectUris,
+      appUrl: validated.appUrl ?? null,
     })
 
     if (validated.userIds && validated.userIds.length > 0) {
@@ -175,6 +172,7 @@ export default class ApplicationController {
         name: validated.name,
         slug: validated.slug || string.slug(validated.name),
         redirectUris: validated.redirectUris,
+        appUrl: validated.appUrl ?? null,
       })
       .save()
 
