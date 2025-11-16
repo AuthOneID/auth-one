@@ -105,7 +105,10 @@ const updateValidator = (applicationId: string) =>
         .array(vine.string().uuid())
         .parse((x) => (Array.isArray(x) ? x.filter(Boolean) : []))
         .optional(),
-      roleIds: vine.array(vine.string().uuid()).optional(),
+      roleIds: vine
+        .array(vine.string().uuid())
+        .parse((x) => (Array.isArray(x) ? x.filter(Boolean) : []))
+        .optional(),
       appUrl: vine.string().url({ require_tld: false }).maxLength(254).optional(),
     })
   )
