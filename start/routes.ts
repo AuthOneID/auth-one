@@ -54,4 +54,5 @@ router.group(() => {
   router.post('/oauth/token', [AuthorizesController, 'oauthToken'])
   router.get('/.well-known/jwks.json', [AuthorizesController, 'getJwks'])
   router.get('/.well-known/openid-configuration', [AuthorizesController, 'getOpenidConfig'])
+  router.get('logout', [LoginController, 'showLogout'])
 })

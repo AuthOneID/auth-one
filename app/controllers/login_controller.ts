@@ -82,4 +82,8 @@ export default class LoginController {
     await auth.use('web').logout()
     return response.redirect('/login')
   }
+
+  public async showLogout({ inertia }: HttpContext) {
+    return inertia.render('logout/index')
+  }
 }
