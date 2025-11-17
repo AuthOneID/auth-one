@@ -1,6 +1,6 @@
-export function AppCard({ name, icon }: { name: string; icon?: string }) {
+export function AppCard({ name, icon, url }: { name: string; icon?: string; url?: string }) {
   return (
-    <div className="group cursor-pointer">
+    <a href={url || '#'} className="group cursor-pointer">
       <div className="bg-card border border-border rounded-lg p-8 h-full transition-all duration-300 hover:border-primary hover:shadow-lg hover:-translate-y-1">
         {/* Icon Container */}
         <div className="mb-6 inline-flex items-center justify-center w-16 h-16 bg-primary/10 rounded-lg group-hover:bg-primary/20 transition-colors overflow-hidden">
@@ -32,6 +32,6 @@ export function AppCard({ name, icon }: { name: string; icon?: string }) {
           </svg>
         </div>
       </div>
-    </div>
+    </a>
   )
 }

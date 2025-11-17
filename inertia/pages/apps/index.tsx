@@ -20,7 +20,7 @@ const Page = ({ apps, isSuperAdmin }: AppsProps) => {
       <header className="bg-background flex justify-between h-14 items-center gap-2">
         <div className="flex items-center gap-2.5">
           <img src={settings.logo || '/img/logo.png'} className="h-6 md:h-10 mx-auto" alt="logo" />
-          <div className="text-xl md:text-3xl font-medium">AuthOne</div>
+          <div className="text-xl md:text-3xl font-medium">{settings.title || 'AuthOne'}</div>
         </div>
         <div className="flex items-center gap-2.5">
           {isSuperAdmin && (
@@ -38,8 +38,9 @@ const Page = ({ apps, isSuperAdmin }: AppsProps) => {
       <div className="py-10">
         <div className="text-xl font-semibold mb-3.5">Discover Apps</div>
         <div className="grid grid-cols-2 md:grid-cols-3 gap-3.5">
-          <AppCard name="Cendana15"></AppCard>
-          <AppCard name="Instansi"></AppCard>
+          {apps.map((app) => (
+            <AppCard key={app.id} name={app.name} url={app.appUrl}></AppCard>
+          ))}
         </div>
       </div>
     </div>
