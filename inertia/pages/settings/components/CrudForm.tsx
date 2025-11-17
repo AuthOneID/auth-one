@@ -18,9 +18,7 @@ export const CrudSettings = ({ settings }: { settings: Record<string, string | n
           />
           <div className="space-y-1.5">
             <FormInput label="Logo" name="logo" type="file" error={errors?.logo} />
-            {!!settings?.logo && (
-              <img src={settings?.logo?.replace('storage', '')} alt="Logo" className="h-10" />
-            )}
+            {!!settings?.logo && <img src={settings?.logo} alt="Logo" className="h-10" />}
           </div>
 
           <Button type="submit" className="w-full" disabled={processing}>
