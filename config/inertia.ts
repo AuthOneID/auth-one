@@ -1,3 +1,4 @@
+import Setting from '#models/setting'
 import User from '#models/user'
 import { defineConfig } from '@adonisjs/inertia'
 import type { InferSharedProps } from '@adonisjs/inertia/types'
@@ -14,6 +15,17 @@ const inertiaConfig = defineConfig({
   sharedData: {
     user: (ctx) => ctx.inertia.always(() => ctx.auth.user as User | null),
     flash: (ctx) => ctx.inertia.always(() => ctx.session.flashMessages.all()),
+    settings: (ctx) =>
+      ctx.inertia.always(async () => {
+        const settings = await Setting.all()
+        return settings.reduce(
+          (acc, setting) => {
+            acc[setting.id] = setting.value
+            return acc
+          },
+          {} as Record<string, string | null>
+        )
+      }),
   },
 
   /**

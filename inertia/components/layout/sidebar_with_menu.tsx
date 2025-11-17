@@ -7,14 +7,17 @@ import { SharedProps } from '@adonisjs/inertia/types'
 import { MenuLink } from './MenuLink'
 
 export function SidebarWithMenu({ ...props }: React.ComponentProps<typeof Sidebar>) {
-  const { url } = usePage<SharedProps & Record<string, unknown>>()
+  const {
+    url,
+    props: { settings },
+  } = usePage<SharedProps & Record<string, unknown>>()
   const pathname = url.split('?')[0]
 
   return (
     <Sidebar collapsible="icon" className="z-20" {...props}>
       <div className="py-2 px-4">
         <Link href="/" className="hover:bg-gray-100 rounded-md py-3 block">
-          <img src="/img/logo.png" className="h-10 mx-auto" alt="logo" />
+          <img src={settings.logo || '/img/logo.png'} className="h-10 mx-auto" alt="logo" />
         </Link>
       </div>
       <div className="flex min-h-0 flex-1 flex-col overflow-auto">
