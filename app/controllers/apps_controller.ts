@@ -30,5 +30,10 @@ export default class AppsController {
     if (!isSuperAdmin && filteredApps.length === 1 && filteredApps[0].appUrl) {
       return inertia.location(filteredApps[0].appUrl)
     }
+
+    return inertia.render('apps/index', {
+      apps: filteredApps,
+      isSuperAdmin,
+    })
   }
 }
