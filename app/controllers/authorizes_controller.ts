@@ -11,8 +11,7 @@ import env from '#start/env'
 import crypto from 'node:crypto'
 import { readFile } from 'node:fs/promises'
 import { Infer } from '@vinejs/vine/types'
-import path from 'node:path'
-import { STORAGE_PATH } from '../../constant/index.js'
+import serviceApp from '@adonisjs/core/services/app'
 
 const schema = vine.object({
   response_type: vine.enum(['code']),
@@ -261,7 +260,7 @@ export default class AuthorizesController {
    */
   public async getJwks({ response }: HttpContext) {
     try {
-      const jwkContent = await readFile(path.join(STORAGE_PATH(), '/keys/public.jwk.json'), 'utf8')
+      const jwkContent = await readFile(serviceApp.makePath('storage/keys/public.jwk.json'), 'utf8')
       const jwk = JSON.parse(jwkContent)
 
       // Add 'use' and 'alg' fields for better OIDC compliance
