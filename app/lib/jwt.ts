@@ -2,6 +2,7 @@
 import { generateKeyPairSync } from 'node:crypto'
 import { importSPKI, exportJWK, importPKCS8, SignJWT, JWTPayload } from 'jose'
 import { access, mkdir, readFile, writeFile } from 'node:fs/promises'
+import app from '@adonisjs/core/services/app'
 
 export const existsAsync = async (path: string): Promise<boolean> => {
   try {
@@ -13,25 +14,34 @@ export const existsAsync = async (path: string): Promise<boolean> => {
 }
 
 export const generateKey = async () => {
-  if ((await existsAsync('keys/private.pem')) && (await existsAsync('keys/public.pem'))) {
+  if (
+    (await existsAsync(app.makePath('storage/keys/private.pem'))) &&
+    (await existsAsync(app.makePath('storage/keys/public.pem')))
+  ) {
     return
   }
 
   // Ensure keys directory exists
-  if (!(await existsAsync('keys'))) {
-    await mkdir('keys', { recursive: true })
+  if (!(await existsAsync(app.makePath('storage/keys')))) {
+    await mkdir(app.makePath('storage/keys'), { recursive: true })
   }
 
   const { publicKey, privateKey } = generateKeyPairSync('ed25519')
 
-  await writeFile('keys/private.pem', privateKey.export({ type: 'pkcs8', format: 'pem' }))
-  await writeFile('keys/public.pem', publicKey.export({ type: 'spki', format: 'pem' }))
+  await writeFile(
+    app.makePath('storage/keys/private.pem'),
+    privateKey.export({ type: 'pkcs8', format: 'pem' })
+  )
+  await writeFile(
+    app.makePath('storage/keys/public.pem'),
+    publicKey.export({ type: 'spki', format: 'pem' })
+  )
 
   const publicKeyPem = publicKey.export({ type: 'spki', format: 'pem' }) as string
   const jwk = await exportJWK(await importSPKI(publicKeyPem, 'EdDSA'))
   jwk.kid = 'kid-' + Date.now()
-  await writeFile('keys/public.jwk.json', JSON.stringify(jwk, null, 2))
-  console.log('Generated keys in ./keys/, jwk:', jwk.kid)
+  await writeFile(app.makePath('storage/keys/public.jwk.json'), JSON.stringify(jwk, null, 2))
+  console.log(`Generated keys in ${app.makePath('storage/keys')}, jwk:`, jwk.kid)
 }
 
 export const signAuthToken = async (
@@ -43,11 +53,11 @@ export const signAuthToken = async (
     subject,
   }: { expiry: string; audience: string; issuer: string; subject: string }
 ) => {
-  const privPem = await readFile('keys/private.pem', 'utf8')
+  const privPem = await readFile(app.makePath('storage/keys/private.pem'), 'utf8')
   const privateKey = await importPKCS8(privPem, 'EdDSA')
 
   // Read the kid from the JWK file
-  const jwkContent = await readFile('keys/public.jwk.json', 'utf8')
+  const jwkContent = await readFile(app.makePath('storage/keys/public.jwk.json'), 'utf8')
   const jwk = JSON.parse(jwkContent)
   const kid = jwk.kid
 
