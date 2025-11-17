@@ -9,6 +9,7 @@
 
 import router from '@adonisjs/core/services/router'
 import { middleware } from './kernel.js'
+const UploadsController = () => import('#controllers/uploads_controller')
 const SettingsController = () => import('#controllers/settings_controller')
 const AppsController = () => import('#controllers/apps_controller')
 const AuthorizesController = () => import('#controllers/authorizes_controller')
@@ -57,4 +58,5 @@ router.group(() => {
   router.get('/.well-known/jwks.json', [AuthorizesController, 'getJwks'])
   router.get('/.well-known/openid-configuration', [AuthorizesController, 'getOpenidConfig'])
   router.get('logout', [LoginController, 'showLogout'])
+  router.get('/uploads/*', [UploadsController, 'download'])
 })
