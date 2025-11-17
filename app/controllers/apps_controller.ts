@@ -2,9 +2,7 @@ import Application from '#models/application'
 import type { HttpContext } from '@adonisjs/core/http'
 
 export default class AppsController {
-  public async index({ inertia, auth }: HttpContext) {
-    console.log('Init')
-
+  public async index({ inertia, auth, request }: HttpContext) {
     await auth.user?.load('groups')
     await auth.user?.load('roles')
     await auth.user?.load('applications')
@@ -29,16 +27,11 @@ export default class AppsController {
       return isAllowed || isSuperAdmin
     })
 
-    console.log('FAIL')
-
     if (!isSuperAdmin && filteredApps.length === 1 && filteredApps[0].appUrl) {
-      console.log('url ', filteredApps[0].appUrl)
-      console.log({ isSuperAdmin, filteredApps })
-
-      return inertia.location(filteredApps[0].appUrl)
+      if (request.header('x-inertia')) {
+        return inertia.location(filteredApps[0].appUrl)
+      }
     }
-
-    console.log('PASS')
 
     return inertia.render('apps/index', {
       apps: filteredApps,
