@@ -39,7 +39,7 @@ export const AdminLayout = ({ children }: { children: React.ReactNode }) => {
       <SidebarInset>
         {user && <Header initial={user?.fullName?.[0].toUpperCase() || '?'} />}
         <div className="pt-14">{children}</div>
-        <Toaster richColors position="top-right" />
+        <Toaster richColors position="top-right" closeButton />
       </SidebarInset>
     </SidebarProvider>
   )

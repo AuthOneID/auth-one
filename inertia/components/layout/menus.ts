@@ -1,4 +1,4 @@
-import { SquareTerminal, LucideProps, FolderOpen, LayoutDashboard } from 'lucide-react'
+import { SquareTerminal, LucideProps, FolderOpen, LayoutDashboard, Wrench } from 'lucide-react'
 
 export interface Menu {
   title: string
@@ -42,5 +42,10 @@ export const menus: Menu[] = [
         url: '/admin/roles',
       },
     ],
+  },
+  {
+    title: 'Settings',
+    url: '/admin/settings',
+    icon: Wrench,
   },
 ]

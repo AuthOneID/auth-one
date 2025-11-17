@@ -4,6 +4,7 @@ import type { ApplicationService } from '@adonisjs/core/types'
 import string from '@adonisjs/core/helpers/string'
 import { generateKey } from '../app/lib/jwt.js'
 import ace from '@adonisjs/core/services/ace'
+import env from '#start/env'
 
 export default class AppProvider {
   constructor(protected app: ApplicationService) {}
@@ -27,7 +28,9 @@ export default class AppProvider {
    * The process has been started
    */
   async ready() {
-    await ace.exec('migration:run', ['--force'])
+    if (env.get('NODE_ENV') === 'production') {
+      await ace.exec('migration:run', ['--force'])
+    }
 
     await generateKey()
     const groupExist = await Group.query().first()
