@@ -32,6 +32,9 @@ export default class AppsController {
     console.log('FAIL')
 
     if (!isSuperAdmin && filteredApps.length === 1 && filteredApps[0].appUrl) {
+      console.log('url ', filteredApps[0].appUrl)
+      console.log({ isSuperAdmin, filteredApps })
+
       return inertia.location(filteredApps[0].appUrl)
     }
 
