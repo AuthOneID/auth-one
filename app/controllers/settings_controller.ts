@@ -49,7 +49,7 @@ export default class SettingsController {
       await validated.logo.move(app.makePath('storage/uploads'))
       await Setting.updateOrCreate(
         { id: 'logo' },
-        { value: path.join('uploads', validated.logo.fileName!) }
+        { value: path.join('/uploads', validated.logo.fileName!) }
       )
     }
 
