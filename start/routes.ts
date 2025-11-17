@@ -9,6 +9,7 @@
 
 import router from '@adonisjs/core/services/router'
 import { middleware } from './kernel.js'
+const ApiUsersController = () => import('#controllers/api/users_controller')
 const UploadsController = () => import('#controllers/uploads_controller')
 const SettingsController = () => import('#controllers/settings_controller')
 const AppsController = () => import('#controllers/apps_controller')
@@ -39,6 +40,13 @@ router
     router.get('/', [DashboardController, 'root'])
   })
   .use([middleware.auth()])
+
+router
+  .group(() => {
+    router.patch('users/:id', [ApiUsersController, 'update'])
+  })
+  .use([middleware.apiKey()])
+  .prefix('api')
 
 router
   .group(() => {
