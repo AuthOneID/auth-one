@@ -3,7 +3,7 @@ import { BaseModel, column } from '@adonisjs/lucid/orm'
 
 export default class Setting extends BaseModel {
   @column({ isPrimary: true })
-  declare id: string
+  declare id: 'api_token' | 'title' | 'logo'
 
   @column()
   declare value: string | null
