@@ -9,6 +9,7 @@
 
 import router from '@adonisjs/core/services/router'
 import { middleware } from './kernel.js'
+const ApiGroupsController = () => import('#controllers/api/groups_controller')
 const ApiUsersController = () => import('#controllers/api/users_controller')
 const UploadsController = () => import('#controllers/uploads_controller')
 const SettingsController = () => import('#controllers/settings_controller')
@@ -46,6 +47,8 @@ router
 router
   .group(() => {
     router.resource('users', ApiUsersController).only(['show', 'store', 'update'])
+    router.post('groups/:id/add_user', [ApiGroupsController, 'addUser'])
+    router.post('groups/:id/remove_user', [ApiGroupsController, 'removeUser'])
   })
   .use([middleware.apiKey()])
   .prefix('api')
