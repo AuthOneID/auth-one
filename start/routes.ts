@@ -45,11 +45,11 @@ router
 
 router
   .group(() => {
-    router.patch('users/:id', [ApiUsersController, 'update'])
-    router.post('users', [ApiUsersController, 'store'])
+    router.resource('users', ApiUsersController).only(['show', 'store', 'update'])
   })
   .use([middleware.apiKey()])
   .prefix('api')
+  .as('api')
 
 router
   .group(() => {
