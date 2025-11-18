@@ -39,9 +39,24 @@ const createValidator = vine.compile(
     }),
   })
 )
+
 const updateValidator = vine.compile(
   vine.object({
     ...schema.getProperties(),
+    password: vine
+      .string()
+      .minLength(8)
+      .confirmed({
+        confirmationField: 'passwordConfirmation',
+      })
+      .optional(),
+  })
+)
+
+const updateProfileValidator = vine.compile(
+  vine.object({
+    name: vine.string().minLength(1).maxLength(254),
+    email: vine.string().email().maxLength(254).optional().nullable(),
     password: vine
       .string()
       .minLength(8)
@@ -144,7 +159,7 @@ export default class UsersController {
   }
 
   public async updateProfile({ response, request, session, auth }: HttpContext) {
-    const validated = await updateValidator.validate(request.all())
+    const validated = await updateProfileValidator.validate(request.all())
 
     const updateData: any = {
       fullName: validated.name,
