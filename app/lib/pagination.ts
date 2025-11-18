@@ -42,7 +42,7 @@ export const getPaginatedResult = async <T>(
   if (pagination.search) {
     query.where((qs) => {
       options?.searchColumns?.map((column) => {
-        qs.orWhere(column, 'like', `%${pagination.search}%`)
+        qs.orWhere(column, 'ilike', `%${pagination.search}%`)
       })
     })
   }
