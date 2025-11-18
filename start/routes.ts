@@ -46,13 +46,12 @@ router
 
 router
   .group(() => {
-    router.resource('users', ApiUsersController).only(['show', 'store', 'update'])
+    router.resource('users', ApiUsersController).only(['show', 'store', 'update']).as('api.users')
     router.post('groups/:id/add_user', [ApiGroupsController, 'addUser'])
     router.post('groups/:id/remove_user', [ApiGroupsController, 'removeUser'])
   })
   .use([middleware.apiKey()])
   .prefix('api')
-  .as('api')
 
 router
   .group(() => {
