@@ -12,7 +12,7 @@ vine.messagesProvider = new SimpleMessagesProvider(
 
 const schema = vine.object({
   name: vine.string().minLength(1).maxLength(254),
-  username: vine.string().maxLength(254).optional().requiredIfMissing('email'),
+  username: vine.string().maxLength(254).optional(),
   email: vine.string().email().maxLength(254).optional(),
   isActive: vine.boolean().optional(),
   groupIds: vine
@@ -32,13 +32,7 @@ const schema = vine.object({
 const updateValidator = vine.compile(
   vine.object({
     ...schema.getProperties(),
-    password: vine
-      .string()
-      .minLength(8)
-      .confirmed({
-        confirmationField: 'passwordConfirmation',
-      })
-      .optional(),
+    password: vine.string().minLength(8).optional(),
   })
 )
 

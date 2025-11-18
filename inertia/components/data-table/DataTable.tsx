@@ -56,7 +56,7 @@ export const DataTable = ({
   const [searchValue, setSearchValue] = useState(initialSearchValue)
 
   // Debounce the search value with 500ms delay
-  const debouncedSearchValue = useDebounce(searchValue, 500)
+  const debouncedSearchValue = useDebounce(searchValue, 300)
 
   // Update URL params when debounced search value changes
   useEffect(() => {
