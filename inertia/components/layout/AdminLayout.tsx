@@ -1,4 +1,4 @@
-import { usePage } from '@inertiajs/react'
+import { Head, usePage } from '@inertiajs/react'
 import { Header } from './header'
 import { SidebarInset, SidebarProvider } from './sidebar'
 import { SidebarWithMenu } from './sidebar_with_menu'
@@ -8,7 +8,7 @@ import { useEffect } from 'react'
 
 export const AdminLayout = ({ children }: { children: React.ReactNode }) => {
   const {
-    props: { user, flash },
+    props: { user, flash, settings },
   } = usePage<SharedProps & Record<string, unknown>>()
 
   useEffect(() => {
@@ -37,6 +37,7 @@ export const AdminLayout = ({ children }: { children: React.ReactNode }) => {
     <SidebarProvider>
       <SidebarWithMenu></SidebarWithMenu>
       <SidebarInset>
+        <Head title={settings.title ?? 'AuthOne'} />
         {user && <Header initial={user?.fullName?.[0].toUpperCase() || '?'} />}
         <div className="pt-14">{children}</div>
         <Toaster richColors position="top-right" closeButton />
