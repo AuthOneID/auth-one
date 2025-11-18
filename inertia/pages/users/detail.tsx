@@ -130,11 +130,6 @@ const Page = ({
                         Password must be at least 8 characters long.
                       </p>
                     )}
-                    {user && (
-                      <p className="text-xs text-muted-foreground">
-                        Leave blank to keep current password.
-                      </p>
-                    )}
                   </div>
                 ))}
             </div>

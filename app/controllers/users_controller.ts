@@ -75,6 +75,16 @@ export default class UsersController {
     })
   }
 
+  public async showProfile({ inertia, auth }: HttpContext) {
+    await auth.user?.load('groups')
+    const isSuperAdmin = auth.user?.groups.some((g) => g.isSuperuser)
+
+    return inertia.render('profile/detail', {
+      user: auth.user,
+      isSuperAdmin: isSuperAdmin,
+    })
+  }
+
   public async store({ response, request, session }: HttpContext) {
     const validated = await createValidator.validate(request.all())
 
@@ -130,6 +140,25 @@ export default class UsersController {
     }
 
     session.flash('success', 'User successfully updated.')
+    return response.redirect().back()
+  }
+
+  public async updateProfile({ response, request, session, auth }: HttpContext) {
+    const validated = await updateValidator.validate(request.all())
+
+    const updateData: any = {
+      fullName: validated.name,
+      email: validated.email,
+    }
+
+    // Only update password if provided
+    if (validated.password) {
+      updateData.password = validated.password
+    }
+
+    await auth.user?.merge(updateData).save()
+
+    session.flash('success', 'Profile successfully updated.')
     return response.redirect().back()
   }
 

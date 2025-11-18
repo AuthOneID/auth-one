@@ -38,6 +38,8 @@ router
     router.post('logout', [LoginController, 'logout'])
     router.get('apps', [AppsController, 'index'])
     router.get('/', [DashboardController, 'root'])
+    router.get('/profile', [UsersController, 'showProfile'])
+    router.patch('/profile', [UsersController, 'updateProfile'])
   })
   .use([middleware.auth()])
 
