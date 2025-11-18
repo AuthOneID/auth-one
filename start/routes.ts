@@ -46,6 +46,7 @@ router
 router
   .group(() => {
     router.patch('users/:id', [ApiUsersController, 'update'])
+    router.post('users', [ApiUsersController, 'store'])
   })
   .use([middleware.apiKey()])
   .prefix('api')

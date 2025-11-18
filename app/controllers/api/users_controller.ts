@@ -16,19 +16,15 @@ const schema = vine.object({
   username: vine.string().maxLength(254).optional(),
   email: vine.string().email().maxLength(254).optional(),
   isActive: vine.boolean().optional(),
-  groupIds: vine
-    .array(vine.string().uuid())
-    .parse((x) => (!x ? undefined : Array.isArray(x) ? x.filter(Boolean) : []))
-    .optional(),
-  roleIds: vine
-    .array(vine.string().uuid())
-    .parse((x) => (!x ? undefined : Array.isArray(x) ? x.filter(Boolean) : []))
-    .optional(),
-  applicationIds: vine
-    .array(vine.string().uuid())
-    .parse((x) => (!x ? undefined : Array.isArray(x) ? x.filter(Boolean) : []))
-    .optional(),
 })
+
+const createValidator = vine.compile(
+  vine.object({
+    ...schema.getProperties(),
+    username: vine.string().maxLength(254).optional().requiredIfMissing('email'),
+    password: vine.string().minLength(8),
+  })
+)
 
 const updateValidator = vine.compile(
   vine.object({
@@ -38,6 +34,20 @@ const updateValidator = vine.compile(
 )
 
 export default class ApiUsersController {
+  public async store({ response, request }: HttpContext) {
+    const validated = await createValidator.validate(request.all())
+
+    const user = await User.create({
+      fullName: validated.name,
+      email: validated.email,
+      username: validated.username,
+      password: validated.password,
+      isActive: validated.isActive ?? true,
+    })
+
+    return response.ok(user.serializeAttributes(['id', 'fullName', 'username', 'email']))
+  }
+
   public async update({ response, request, params }: HttpContext) {
     const validated = await updateValidator.validate(request.all())
 
@@ -51,19 +61,6 @@ export default class ApiUsersController {
 
     await user.merge(updateData).save()
 
-    if (validated.groupIds) {
-      await user.related('groups').sync(validated.groupIds)
-    }
-    if (validated.roleIds) {
-      await user.related('roles').sync(validated.roleIds)
-    }
-    if (validated.applicationIds) {
-      await user.related('applications').sync(validated.applicationIds)
-    }
-
-    return response.ok({
-      message: 'User successfully updated.',
-      status: 'success',
-    })
+    return response.ok(user.serializeAttributes(['id', 'fullName', 'username', 'email']))
   }
 }
