@@ -13,7 +13,7 @@ vine.messagesProvider = new SimpleMessagesProvider(
 )
 
 const schema = vine.object({
-  name: vine.string().minLength(1).maxLength(254),
+  fullName: vine.string().minLength(1).maxLength(254),
   username: vine.string().maxLength(254).optional(),
   email: vine.string().email().maxLength(254).optional(),
   isActive: vine.boolean().optional(),
@@ -50,10 +50,7 @@ export default class ApiUsersController {
     const validated = await createValidator.validate(request.all())
 
     const user = await User.create({
-      fullName: validated.name,
-      email: validated.email,
-      username: validated.username,
-      password: validated.password,
+      ...pick(validated, ['fullName', 'email', 'username', 'password']),
       isActive: validated.isActive ?? true,
     })
 
@@ -68,7 +65,7 @@ export default class ApiUsersController {
     const validated = await updateValidator.validate(request.all())
 
     const user = await User.findOrFail(params.id)
-    const updateData: any = pick(validated, ['name', 'email', 'username', 'isActive'])
+    const updateData: Partial<User> = pick(validated, ['email', 'username', 'isActive', 'fullName'])
 
     if (validated.password) {
       updateData.password = validated.password
