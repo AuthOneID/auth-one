@@ -1,4 +1,6 @@
-import { Form } from '@inertiajs/react'
+import { SharedProps } from '@adonisjs/inertia/types'
+import { Form, usePage } from '@inertiajs/react'
+import { Loader2 } from 'lucide-react'
 import { FormMessage } from '~/components/form/FormMessage'
 import { Button } from '~/components/ui/button'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '~/components/ui/card'
@@ -8,6 +10,9 @@ import { Label } from '~/components/ui/label'
 const Page = () => {
   const params = new URLSearchParams(window.location.search)
   const redirect = params.get('redirect')
+  const {
+    props: { settings },
+  } = usePage<SharedProps & Record<string, unknown>>()
 
   return (
     <div className="bg-muted flex min-h-svh flex-col items-center justify-center gap-6 p-6 md:p-10">
@@ -19,15 +24,15 @@ const Page = () => {
                 href="/"
                 className="flex items-center gap-2 self-center font-medium mx-auto mb-3.5"
               >
-                <img src="/img/logo.png" alt="logo" className="h-16" />
+                <img src={settings.logo || '/img/logo.png'} alt="logo" className="h-16" />
               </a>
-              <CardTitle className="text-xl">Welcome to AuthOne</CardTitle>
+              <CardTitle className="text-xl">Welcome to {settings.title || 'AuthOne'}</CardTitle>
               <CardDescription>Login with your username and password</CardDescription>
             </CardHeader>
             <CardContent>
               <div className="grid gap-6">
                 <Form action="/login" method="post" className="space-y-5">
-                  {({ errors }) => {
+                  {({ errors, processing }) => {
                     const errorMessage = Object.entries(errors ?? {})
                       .filter((x) => x[0] !== 'username' && x[0] !== 'password')
                       .map((x) => x[1])
@@ -57,8 +62,9 @@ const Page = () => {
                         </div>
 
                         <div>
-                          <Button type="submit" className="w-full">
-                            Login
+                          <Button type="submit" className="w-full" disabled={processing}>
+                            {processing && <Loader2 className="animate-spin" />}
+                            {processing ? 'Logging in...' : 'Login'}
                           </Button>
                           {errorMessage && (
                             <div className="text-center text-destructive text-sm mt-2">
