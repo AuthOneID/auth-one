@@ -7,13 +7,14 @@ import {
 } from '~/components/ui/dropdown-menu'
 import { Button } from '~/components/ui/button'
 import { useState } from 'react'
-import { ChevronDown, Loader2, Trash2 } from 'lucide-react'
+import { ChevronDown, Loader2, Trash2, Copy } from 'lucide-react'
 import { Form } from '@inertiajs/react'
 import { AdminLayout } from '~/components/layout/AdminLayout'
 import { BaseCard } from '~/components/BaseCard'
 import { FormInput } from '~/components/form/FormInput'
 import Role from '#models/role'
 import { DeleteDialog } from '~/components/form/DeleteDialog'
+import { toast } from 'sonner'
 
 const Page = ({
   role,
@@ -24,6 +25,11 @@ const Page = ({
   flash: { failure?: string }
 }) => {
   const [deleteIsOpen, setDeleteIsOpen] = useState(!!flash.failure || false)
+
+  const copyToClipboard = (text: string, label: string) => {
+    navigator.clipboard.writeText(text)
+    toast.success(`${label} copied to clipboard`)
+  }
 
   return (
     <ContainerWithBreadcumbs
@@ -64,6 +70,27 @@ const Page = ({
       <Form action={role ? `/admin/roles/${role.id}?_method=PATCH` : '/admin/roles'} method="post">
         {({ errors, processing }) => (
           <BaseCard className="space-y-5">
+            <h3 className="text-base font-semibold mb-3">Role Details</h3>
+
+            {role?.id && (
+              <div>
+                <label className="text-sm font-medium">Role ID</label>
+                <div className="flex items-center gap-2 mt-1">
+                  <code className="flex-1 p-2 bg-muted rounded-md text-sm break-all">
+                    {role.id}
+                  </code>
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    type="button"
+                    onClick={() => copyToClipboard(role.id, 'Role ID')}
+                  >
+                    <Copy className="h-4 w-4" />
+                  </Button>
+                </div>
+              </div>
+            )}
+
             <input type="hidden" name="id" value={role?.id || ''} />
             <FormInput
               label="Name"
