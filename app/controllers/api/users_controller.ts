@@ -1,6 +1,7 @@
 import { type HttpContext } from '@adonisjs/core/http'
 import vine, { SimpleMessagesProvider } from '@vinejs/vine'
 import User from '#models/user'
+import { pick } from 'lodash-es'
 
 vine.messagesProvider = new SimpleMessagesProvider(
   {
@@ -17,15 +18,15 @@ const schema = vine.object({
   isActive: vine.boolean().optional(),
   groupIds: vine
     .array(vine.string().uuid())
-    .parse((x) => (Array.isArray(x) ? x.filter(Boolean) : []))
+    .parse((x) => (!x ? undefined : Array.isArray(x) ? x.filter(Boolean) : []))
     .optional(),
   roleIds: vine
     .array(vine.string().uuid())
-    .parse((x) => (Array.isArray(x) ? x.filter(Boolean) : []))
+    .parse((x) => (!x ? undefined : Array.isArray(x) ? x.filter(Boolean) : []))
     .optional(),
   applicationIds: vine
     .array(vine.string().uuid())
-    .parse((x) => (Array.isArray(x) ? x.filter(Boolean) : []))
+    .parse((x) => (!x ? undefined : Array.isArray(x) ? x.filter(Boolean) : []))
     .optional(),
 })
 
@@ -41,12 +42,7 @@ export default class ApiUsersController {
     const validated = await updateValidator.validate(request.all())
 
     const user = await User.findOrFail(params.id)
-    const updateData: any = {
-      fullName: validated.name,
-      email: validated.email,
-      username: validated.username,
-      isActive: validated.isActive ?? true,
-    }
+    const updateData: any = pick(validated, ['name', 'email', 'username', 'isActive'])
 
     // Only update password if provided
     if (validated.password) {

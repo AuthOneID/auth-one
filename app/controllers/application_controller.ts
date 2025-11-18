@@ -48,15 +48,15 @@ const createValidator = vine.compile(
       .optional(),
     userIds: vine
       .array(vine.string().uuid())
-      .parse((x) => (Array.isArray(x) ? x.filter(Boolean) : []))
+      .parse((x) => (!x ? undefined : Array.isArray(x) ? x.filter(Boolean) : []))
       .optional(),
     groupIds: vine
       .array(vine.string().uuid())
-      .parse((x) => (Array.isArray(x) ? x.filter(Boolean) : []))
+      .parse((x) => (!x ? undefined : Array.isArray(x) ? x.filter(Boolean) : []))
       .optional(),
     roleIds: vine
       .array(vine.string().uuid())
-      .parse((x) => (Array.isArray(x) ? x.filter(Boolean) : []))
+      .parse((x) => (!x ? undefined : Array.isArray(x) ? x.filter(Boolean) : []))
       .optional(),
     appUrl: vine.string().maxLength(254).optional(),
   })
@@ -99,15 +99,15 @@ const updateValidator = (applicationId: string) =>
         .optional(),
       userIds: vine
         .array(vine.string().uuid())
-        .parse((x) => (Array.isArray(x) ? x.filter(Boolean) : []))
+        .parse((x) => (!x ? undefined : Array.isArray(x) ? x.filter(Boolean) : []))
         .optional(),
       groupIds: vine
         .array(vine.string().uuid())
-        .parse((x) => (Array.isArray(x) ? x.filter(Boolean) : []))
+        .parse((x) => (!x ? undefined : Array.isArray(x) ? x.filter(Boolean) : []))
         .optional(),
       roleIds: vine
         .array(vine.string().uuid())
-        .parse((x) => (Array.isArray(x) ? x.filter(Boolean) : []))
+        .parse((x) => (!x ? undefined : Array.isArray(x) ? x.filter(Boolean) : []))
         .optional(),
       appUrl: vine.string().url({ require_tld: false }).maxLength(254).optional(),
     })

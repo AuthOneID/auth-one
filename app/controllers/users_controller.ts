@@ -19,15 +19,15 @@ const schema = vine.object({
   isActive: vine.boolean().optional(),
   groupIds: vine
     .array(vine.string().uuid())
-    .parse((x) => (Array.isArray(x) ? x.filter(Boolean) : []))
+    .parse((x) => (!x ? undefined : Array.isArray(x) ? x.filter(Boolean) : []))
     .optional(),
   roleIds: vine
     .array(vine.string().uuid())
-    .parse((x) => (Array.isArray(x) ? x.filter(Boolean) : []))
+    .parse((x) => (!x ? undefined : Array.isArray(x) ? x.filter(Boolean) : []))
     .optional(),
   applicationIds: vine
     .array(vine.string().uuid())
-    .parse((x) => (Array.isArray(x) ? x.filter(Boolean) : []))
+    .parse((x) => (!x ? undefined : Array.isArray(x) ? x.filter(Boolean) : []))
     .optional(),
 })
 
