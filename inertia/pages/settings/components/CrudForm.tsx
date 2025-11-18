@@ -25,7 +25,7 @@ export const CrudSettings = ({ settings }: { settings: Record<string, string | n
             <Loader2
               className={`h-4 w-4 animate-spin ${processing ? 'opacity-100' : 'opacity-0'}`}
             />
-            <span className="pr-4">Simpan</span>
+            <span className="pr-4">Submit</span>
           </Button>
         </BaseCard>
       )}

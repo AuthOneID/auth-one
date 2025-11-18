@@ -29,9 +29,9 @@ export const DropdownUser = ({ initial }: { initial: string }) => {
       >
         <DropdownMenuGroup>
           <DropdownMenuItem asChild>
-            <Link href={'/akun'} className="cursor-pointer">
+            <Link href={'/profile'} className="cursor-pointer">
               <BadgeCheck />
-              Account
+              Profile
             </Link>
           </DropdownMenuItem>
         </DropdownMenuGroup>
