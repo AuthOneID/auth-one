@@ -1,7 +1,7 @@
 import { Button } from '~/components/ui/button'
 import { useEffect, useState } from 'react'
 import { KeyRound, Loader2 } from 'lucide-react'
-import { Form, Link, usePage } from '@inertiajs/react'
+import { Form, Head, Link, usePage } from '@inertiajs/react'
 import { BaseCard } from '~/components/BaseCard'
 import User from '#models/user'
 import { FormInput } from '~/components/form/FormInput'
@@ -28,6 +28,7 @@ const Page = ({ user, isSuperAdmin }: { user: User | null; isSuperAdmin: boolean
   return (
     <div className="px-5 max-w-4xl mx-auto py-2.5 md:py-5">
       <Toaster richColors position="top-right" closeButton />
+      <Head title={settings.title ?? 'AuthOne'} />
       <header className="bg-background flex justify-between h-14 items-center gap-2">
         <div className="flex items-center gap-2.5">
           <img src={settings.logo || '/img/logo.png'} className="h-6 md:h-10 mx-auto" alt="logo" />
@@ -43,7 +44,7 @@ const Page = ({ user, isSuperAdmin }: { user: User | null; isSuperAdmin: boolean
               </Button>
             </div>
           )}
-          <DropdownUser initial="A"></DropdownUser>
+          <DropdownUser initial={user?.fullName?.[0].toUpperCase() || '?'}></DropdownUser>
         </div>
       </header>
       <div className="py-10">

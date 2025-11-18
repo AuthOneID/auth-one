@@ -1,7 +1,7 @@
 import { DropdownUser } from '~/components/layout/user_dropdown'
 import { AppCard } from './components/AppCard'
 import { Button } from '~/components/ui/button'
-import { Link, usePage } from '@inertiajs/react'
+import { Head, Link, usePage } from '@inertiajs/react'
 import { KeyRound } from 'lucide-react'
 import { SharedProps } from '@adonisjs/inertia/types'
 
@@ -12,11 +12,12 @@ interface AppsProps {
 
 const Page = ({ apps, isSuperAdmin }: AppsProps) => {
   const {
-    props: { settings },
+    props: { settings, user },
   } = usePage<SharedProps & Record<string, unknown>>()
 
   return (
     <div className="px-5 max-w-4xl mx-auto py-2.5 md:py-5">
+      <Head title={settings.title ?? 'AuthOne'} />
       <header className="bg-background flex justify-between h-14 items-center gap-2">
         <div className="flex items-center gap-2.5">
           <img src={settings.logo || '/img/logo.png'} className="h-6 md:h-10 mx-auto" alt="logo" />
@@ -32,7 +33,7 @@ const Page = ({ apps, isSuperAdmin }: AppsProps) => {
               </Button>
             </div>
           )}
-          <DropdownUser initial="A"></DropdownUser>
+          <DropdownUser initial={user?.fullName?.[0].toUpperCase() || '?'}></DropdownUser>
         </div>
       </header>
       <div className="py-10">
