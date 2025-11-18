@@ -23,7 +23,7 @@ export default class ApiGroupsController {
     const { id } = await idValidator.validate(request.all())
 
     const group = await Group.findOrFail(params.id)
-    group.related('users').attach([id])
+    group.related('users').sync([id], false)
 
     return response.ok({ message: 'User added to group successfully' })
   }
