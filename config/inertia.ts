@@ -26,6 +26,11 @@ const inertiaConfig = defineConfig({
           {} as Record<string, string | null>
         )
       }),
+    isSuperAdmin: (ctx) =>
+      ctx.inertia.always(async () => {
+        await ctx.auth.user?.load('groups')
+        return ctx.auth.user?.groups.some((g) => g.isSuperuser)
+      }),
   },
 
   /**

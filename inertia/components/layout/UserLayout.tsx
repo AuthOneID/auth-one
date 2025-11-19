@@ -1,6 +1,4 @@
-import { Button } from '~/components/ui/button'
 import { Head, Link, usePage } from '@inertiajs/react'
-import { KeyRound } from 'lucide-react'
 import { DropdownUser } from '~/components/layout/user_dropdown'
 import { SharedProps } from '@adonisjs/inertia/types'
 import { toast, Toaster } from 'sonner'
@@ -13,7 +11,7 @@ interface UserLayoutProps {
 
 export const UserLayout = ({ children, title }: UserLayoutProps) => {
   const { props } = usePage<SharedProps>()
-  const { settings, user, isSuperAdmin, flash } = props as any
+  const { settings, user, flash } = props as any
 
   useEffect(() => {
     if (flash?.success) {
@@ -33,15 +31,6 @@ export const UserLayout = ({ children, title }: UserLayoutProps) => {
           <div className="text-xl md:text-3xl font-medium">{settings.title || 'AuthOne'}</div>
         </a>
         <div className="flex items-center gap-2.5">
-          {isSuperAdmin && (
-            <div>
-              <Button variant="outline" size="sm" className="inline-flex" asChild>
-                <Link href={'/admin'}>
-                  <KeyRound /> Admin
-                </Link>
-              </Button>
-            </div>
-          )}
           <DropdownUser initial={user?.fullName?.[0].toUpperCase() || '?'}></DropdownUser>
         </div>
       </header>
