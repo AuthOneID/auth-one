@@ -146,7 +146,7 @@ export default class AuthorizesController {
       appRoleIds.some((id) => userRoleIds.includes(id))
 
     if (!isAllowed) {
-      return response.unauthorized('You do not have access to this application.')
+      return response.redirect(`/apps`)
     }
 
     const redeemCode = stringHelpers.generateRandom(120)
