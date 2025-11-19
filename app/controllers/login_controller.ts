@@ -10,6 +10,13 @@ const schema = vine.object({
 })
 const validator = vine.compile(schema)
 
+const normalizeBcrypt = (h: string) => {
+  if (h.startsWith('$2y$')) {
+    return '$2b$' + h.substring(4)
+  }
+  return h
+}
+
 export default class LoginController {
   public async show({ inertia }: HttpContext) {
     return inertia.render('login/index')
@@ -65,7 +72,7 @@ export default class LoginController {
       return this.handleAuthSuccess(user, ctx)
     }
 
-    const isBcryptValid = await hash.use('bcrypt').verify(user.password, password)
+    const isBcryptValid = await hash.use('bcrypt').verify(normalizeBcrypt(user.password), password)
     if (isBcryptValid) {
       return this.handleAuthSuccess(user, ctx)
     }
