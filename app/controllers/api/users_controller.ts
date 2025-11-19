@@ -37,11 +37,15 @@ const updateValidator = vine.compile(
 )
 
 export default class ApiUsersController {
-  public async show({ params }: HttpContext) {
+  public async show({ params, response }: HttpContext) {
     const [err] = await vine.tryValidate({ schema: vine.string().uuid(), data: params.id })
     const user = err
-      ? await User.query().where('username', params.id).orWhere('email', params.id).firstOrFail()
-      : await User.findOrFail(params.id)
+      ? await User.query().where('username', params.id).orWhere('email', params.id).first()
+      : await User.first(params.id)
+
+    if (!user) {
+      return response.notFound({ message: 'User not found' })
+    }
 
     return user
   }
