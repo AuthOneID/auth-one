@@ -1,4 +1,4 @@
-import { Head, Link, usePage } from '@inertiajs/react'
+import { Head, usePage } from '@inertiajs/react'
 import { DropdownUser } from '~/components/layout/user_dropdown'
 import { SharedProps } from '@adonisjs/inertia/types'
 import { toast, Toaster } from 'sonner'
