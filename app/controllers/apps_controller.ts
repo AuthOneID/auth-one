@@ -8,7 +8,11 @@ export default class AppsController {
     await auth.user?.load('applications')
     const isSuperAdmin = auth.user?.groups.some((g) => g.isSuperuser)
 
-    const apps = await Application.query().preload('users').preload('groups').preload('roles')
+    const apps = await Application.query()
+      .preload('users')
+      .preload('groups')
+      .preload('roles')
+      .orderBy('name')
 
     // Filter apps based on user access
     const filteredApps = apps.filter((app) => {
