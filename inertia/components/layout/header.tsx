@@ -1,6 +1,8 @@
 import { Link } from '@inertiajs/react'
 import { SidebarTrigger } from './sidebar'
 import { DropdownUser } from './user_dropdown'
+import { Button } from '../ui/button'
+import { AppWindow } from 'lucide-react'
 
 export const Header = ({ initial }: { initial: string }) => {
   return (
@@ -11,7 +13,12 @@ export const Header = ({ initial }: { initial: string }) => {
       <Link href="/" className="hover:bg-gray-100 rounded-md py-3 block md:hidden">
         <img src="/img/logo.png" className="h-6 mx-auto" alt="logo" />
       </Link>
-      <div className="px-5">
+      <div className="px-5 flex items-center gap-2.5">
+        <Button variant="outline" size="sm" className="inline-flex" asChild>
+          <Link href={'/apps'}>
+            <AppWindow /> Apps
+          </Link>
+        </Button>
         <DropdownUser initial={initial}></DropdownUser>
       </div>
     </header>
