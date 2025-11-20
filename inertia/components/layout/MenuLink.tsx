@@ -2,14 +2,21 @@ import { ChevronRight, Dot } from 'lucide-react'
 import { Menu } from './menus'
 import { Link } from '@inertiajs/react'
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '../ui/collapsible'
-import { SidebarGroup, SidebarGroupContent, SidebarGroupLabel } from './sidebar'
+import { SidebarGroup, SidebarGroupContent, SidebarGroupLabel, useSidebar } from './sidebar'
 
 export const MenuLink = ({ item, pathname }: { item: Menu; pathname: string }) => {
+  const { setOpenMobile, isMobile } = useSidebar()
   const isActive =
     item.url === '/admin'
       ? pathname === '/admin'
       : pathname.startsWith(item.url || '') ||
         (item.children?.some((child) => pathname.startsWith(child.url)) ?? false)
+
+  const handleLinkClick = () => {
+    if (isMobile) {
+      setOpenMobile(false)
+    }
+  }
 
   return item.children ? (
     <Collapsible defaultOpen={isActive} className="group/collapsible">
@@ -34,6 +41,7 @@ export const MenuLink = ({ item, pathname }: { item: Menu; pathname: string }) =
             {item.children.map((child) => (
               <Link
                 href={child.url}
+                onClick={handleLinkClick}
                 className={`flex gap-2.5 items-center pl-3 pr-2 h-8 rounded-md font-medium text-[13px] ${
                   pathname.startsWith(child.url!) ? 'bg-gray-200' : 'hover:bg-gray-100'
                 }`}
@@ -50,6 +58,7 @@ export const MenuLink = ({ item, pathname }: { item: Menu; pathname: string }) =
   ) : (
     <Link
       href={item.url}
+      onClick={handleLinkClick}
       className={`flex gap-2.5 mb-0.5 items-center pl-3 pr-2 h-8 rounded-md font-medium text-[13px] ${
         isActive ? 'bg-sidebar-primary text-sidebar-primary-foreground!' : 'hover:bg-gray-100'
       }`}
